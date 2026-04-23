@@ -1,4 +1,4 @@
-# Finance Widget (v0.1)
+# Finance Widget (v0.2)
 
 A lightweight, modern desktop application for Windows that displays clean, borderless stock and ETF charts.
 
@@ -7,6 +7,7 @@ A lightweight, modern desktop application for Windows that displays clean, borde
 - **System Tray Integration:** Runs quietly in the background without cluttering your taskbar.
 - **State Persistence:** Automatically remembers your chosen ticker symbols, window positions on your screen, and "Keep on Top" preferences across restarts.
 - **Clean UI:** Injects custom CSS to strip away headers, footers, and sidebars from Google Finance, leaving just the chart and price.
+- **Beta UI Support (Experimental):** Toggle the use of the new Google Finance Beta interface directly from the widget settings.
 - **Keep on Top:** Pin individual widgets to always stay above other windows.
 
 ## Requirements

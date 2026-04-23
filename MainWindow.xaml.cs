@@ -13,11 +13,13 @@ namespace FinanceWidget
     public partial class MainWindow : Window
     {
         public string CurrentTicker { get; private set; }
+        public bool UseBetaSite { get; private set; }
 
-        public MainWindow(string ticker = "JEPQ:NASDAQ", double left = double.NaN, double top = double.NaN, bool keepOnTop = true)
+        public MainWindow(string ticker = "JEPQ:NASDAQ", double left = double.NaN, double top = double.NaN, bool keepOnTop = true, bool useBetaSite = false)
         {
             InitializeComponent();
             CurrentTicker = ticker;
+            UseBetaSite = useBetaSite;
 
             if (!double.IsNaN(left) && !double.IsNaN(top))
             {
@@ -50,7 +52,8 @@ namespace FinanceWidget
             if (Browser.CoreWebView2 != null)
             {
                 BrowserContainer.Opacity = 0; 
-                Browser.CoreWebView2.Navigate($"https://www.google.com/finance/quote/{ticker}");
+                string baseUrl = UseBetaSite ? "https://www.google.com/finance/beta/quote" : "https://www.google.com/finance/quote";
+                Browser.CoreWebView2.Navigate($"{baseUrl}/{ticker}");
                 TickerLabel.Text = ticker.Split(':')[0];
             }
         }
@@ -63,7 +66,7 @@ namespace FinanceWidget
                     var style = document.createElement('style');
                     style.innerHTML = `
                         /* Hide headers, footers, search bars, sidebars, and Compare to inputs */
-                        header, #gb, footer, div.ZhXxed, div.Y8k45b.fXy5cc, .bF2ive, .F1hUFe, .d73ztd, .qN1Zdf, .N35Hn, .tAEEs, .z4ebah, .PF7Y8c, .id-compare-input, .id-compare-button, .id-compare-input-div, button[aria-label=""Compare to financial entity""] { display: none !important; }
+                        header, #gb, footer, aside, div.ZhXxed, div.Y8k45b.fXy5cc, div.fXy5cc, .bF2ive, .F1hUFe, .d73ztd, .qN1Zdf, .N35Hn, .tAEEs, .z4ebah, .PF7Y8c, .id-compare-input, .id-compare-button, .id-compare-input-div, button[aria-label=""Compare to financial entity""] { display: none !important; }
                         
                         /* Basic clean up */
                         body { overflow: hidden !important; background-color: white !important; margin: 0 !important; padding: 0 !important; }
@@ -90,12 +93,16 @@ namespace FinanceWidget
                         }
                         
                         // Hide everything below the chart container (Beta)
-                        var chart = document.querySelector('div.Gxz3Gc');
+                        var chart = document.querySelector('div.Gxz3Gc') || document.querySelector('div.VfPpkd-dgl2Hf-pp98Pc');
                         if (chart) {
                             var sibling = chart.nextElementSibling;
                             while (sibling) {
                                 sibling.style.display = 'none';
                                 sibling = sibling.nextElementSibling;
+                            }
+                            // Fallback: hide parent siblings if the chart is wrapped
+                            if (chart.parentElement && chart.parentElement.nextElementSibling) {
+                                chart.parentElement.nextElementSibling.style.display = 'none';
                             }
                         }
 
@@ -137,12 +144,24 @@ namespace FinanceWidget
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            var settings = new SettingsWindow(CurrentTicker);
+            var settings = new SettingsWindow(CurrentTicker, UseBetaSite);
             if (settings.ShowDialog() == true)
             {
+                bool settingsChanged = false;
+                if (UseBetaSite != settings.UseBetaSite)
+                {
+                    UseBetaSite = settings.UseBetaSite;
+                    settingsChanged = true;
+                }
+
                 if (CurrentTicker != settings.Ticker)
                 {
                     CurrentTicker = settings.Ticker;
+                    settingsChanged = true;
+                }
+
+                if (settingsChanged)
+                {
                     LoadTicker(CurrentTicker);
                 }
             }
