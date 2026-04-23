@@ -1,0 +1,45 @@
+<Window x:Class="FinanceWidget.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="Finance Widget" Height="400" Width="600"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ShowInTaskbar="False" Topmost="True"
+        Icon="pack://application:,,,/icon.png"
+        Loaded="Window_Loaded">
+    
+    <Grid>
+        <!-- Main Browser -->
+        <Border x:Name="WidgetBorder" CornerRadius="10" Background="White" ClipToBounds="True">
+            <Border.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Keep on Top" x:Name="KeepOnTopMenuItem" IsCheckable="True" IsChecked="True" Click="KeepOnTop_Click" />
+                    <MenuItem Header="Settings" Click="Settings_Click" />
+                    <Separator />
+                    <MenuItem Header="Close Widget" Click="CloseWidget_Click" />
+                </ContextMenu>
+            </Border.ContextMenu>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                
+                <!-- Drag Handle -->
+                <Border Grid.Row="0" Background="#f1f3f4" Cursor="SizeAll" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+                    <Grid>
+                        <TextBlock x:Name="TickerLabel" Text="" FontSize="11" FontWeight="Bold" Foreground="#5f6368" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Rectangle Width="24" Height="2" Fill="#dadce0" Margin="0,1.5" RadiusX="1" RadiusY="1"/>
+                            <Rectangle Width="24" Height="2" Fill="#dadce0" Margin="0,1.5" RadiusX="1" RadiusY="1"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                
+                <Grid Grid.Row="1" x:Name="BrowserContainer">
+                    <wv2:WebView2 x:Name="Browser" DefaultBackgroundColor="Transparent"/>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
