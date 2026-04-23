@@ -66,7 +66,7 @@ namespace FinanceWidget
                     {
                         foreach (var config in state.Widgets)
                         {
-                            var widget = new MainWindow(config.Ticker, config.Left, config.Top, config.KeepOnTop);
+                            var widget = new MainWindow(config.Ticker, config.Left, config.Top, config.KeepOnTop, config.UseBetaSite);
                             widget.Show();
                         }
                         return;
@@ -94,7 +94,8 @@ namespace FinanceWidget
                         Ticker = mw.CurrentTicker,
                         Left = mw.Left,
                         Top = mw.Top,
-                        KeepOnTop = mw.Topmost
+                        KeepOnTop = mw.Topmost,
+                        UseBetaSite = mw.UseBetaSite
                     });
                 }
             }
