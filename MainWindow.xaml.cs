@@ -43,6 +43,7 @@ namespace FinanceWidget
             Browser.CoreWebView2.Settings.IsZoomControlEnabled = false;
             Browser.CoreWebView2.Settings.IsBuiltInErrorPageEnabled = false;
 
+
             Browser.CoreWebView2.NavigationCompleted += CoreWebView2_NavigationCompleted;
             LoadTicker(CurrentTicker);
         }
@@ -62,62 +63,118 @@ namespace FinanceWidget
         {
             if (e.IsSuccess && Browser.CoreWebView2 != null)
             {
+                string currentUrl = Browser.CoreWebView2.Source ?? string.Empty;
+
+                // If navigated away from Finance (e.g. to Google login page),
+                // show the page as-is so the user can interact with it normally.
+                if (!currentUrl.Contains("google.com/finance"))
+                {
+                    ReturnToFinanceMenuItem.Visibility = Visibility.Visible;
+                    BrowserContainer.Opacity = 1;
+                    return;
+                }
+
+                // Back on Finance — hide the Return to Finance menu item
+                ReturnToFinanceMenuItem.Visibility = Visibility.Collapsed;
                 string script = @"
                     var style = document.createElement('style');
-                    style.innerHTML = `
-                        /* Hide headers, footers, search bars, sidebars, and Compare to inputs */
-                        header, #gb, footer, aside, div.ZhXxed, div.Y8k45b.fXy5cc, div.fXy5cc, .bF2ive, .F1hUFe, .d73ztd, .qN1Zdf, .N35Hn, .tAEEs, .z4ebah, .PF7Y8c, .id-compare-input, .id-compare-button, .id-compare-input-div, button[aria-label=""Compare to financial entity""] { display: none !important; }
-                        
-                        /* Basic clean up */
-                        body { overflow: hidden !important; background-color: white !important; margin: 0 !important; padding: 0 !important; }
+                    style.textContent = `
+                        header, nav, #gb, footer, div.ZhXxed, div.Y8k45b.fXy5cc, div.fXy5cc, .bF2ive, .F1hUFe, .d73ztd, .qN1Zdf, .N35Hn, .tAEEs, .z4ebah, .PF7Y8c, .id-compare-input, .id-compare-button, .id-compare-input-div, .f7t46c, .I6776b { display: none !important; }
+                        body { background: white !important; margin: 0 !important; padding: 0 !important; }
                         ::-webkit-scrollbar { display: none !important; }
-
-                        /* Classic site specific hides */
-                        h1 { display: none !important; }
                     `;
                     document.head.appendChild(style);
 
                     function isolateChart() {
-                        // Classic breadcrumb hide
-                        var h1 = document.querySelector('h1');
-                        if (h1 && h1.previousElementSibling) h1.previousElementSibling.style.display = 'none';
+                        var price = document.querySelector('.YMlS1d') || document.querySelector('div.V837kb') || document.querySelector('.YMlKec.fxKbKc');
+                        var chart = document.querySelector('canvas');
 
-                        // Beta breadcrumb hide
-                        var betaBreadcrumb = document.querySelector('a.DJj6Nc');
-                        if (betaBreadcrumb && betaBreadcrumb.parentElement) betaBreadcrumb.parentElement.style.display = 'none';
-
-                        // Hide Google top bar spacer (classic)
-                        var gb = document.getElementById('gb');
-                        if (gb && gb.nextElementSibling && gb.nextElementSibling.tagName === 'DIV') {
-                            gb.nextElementSibling.style.display = 'none';
-                        }
-                        
-                        // Hide everything below the chart container (Beta)
-                        var chart = document.querySelector('div.Gxz3Gc') || document.querySelector('div.VfPpkd-dgl2Hf-pp98Pc');
-                        if (chart) {
-                            var sibling = chart.nextElementSibling;
-                            while (sibling) {
-                                sibling.style.display = 'none';
-                                sibling = sibling.nextElementSibling;
-                            }
-                            // Fallback: hide parent siblings if the chart is wrapped
-                            if (chart.parentElement && chart.parentElement.nextElementSibling) {
-                                chart.parentElement.nextElementSibling.style.display = 'none';
-                            }
+                        // Find the STOCK TITLE h1 — skip the Finance logo h1
+                        var allH1s = document.querySelectorAll('h1');
+                        var h1 = null;
+                        for (var qi = 0; qi < allH1s.length; qi++) {
+                            var t = (allH1s[qi].textContent || '').trim();
+                            if (t.length > 5 && t !== 'Finance') { h1 = allH1s[qi]; break; }
                         }
 
-                        // Scroll directly to the price header to chop off any remaining whitespace
-                        var price = document.querySelector('div.V837kb') || document.querySelector('.YMlKec.fxKbKc');
+                        function safeHide(el) {
+                            if (!el || el.tagName === 'BODY' || el.tagName === 'HTML') return;
+                            if (price && el.contains(price)) return;
+                            if (chart && el.contains(chart)) return;
+                            if (h1 && el.contains(h1)) return;  // never hide the stock title
+                            el.style.setProperty('display', 'none', 'important');
+                        }
+
+                        // Kill position:fixed and position:sticky overlays (the Research panel)
+                        // Only runs when price is found so we know the quote page loaded correctly
                         if (price) {
-                            var rect = price.getBoundingClientRect();
-                            window.scrollTo(0, rect.top + window.scrollY - 15);
-                        } else {
-                            window.scrollTo(0, 0);
+                            var allEls = document.querySelectorAll('body > *, body > * > *');
+                            for (var i = 0; i < allEls.length; i++) {
+                                var cs = window.getComputedStyle(allEls[i]);
+                                if (cs.position === 'fixed' || cs.position === 'sticky') {
+                                    safeHide(allEls[i]);
+                                }
+                            }
                         }
+
+                        // Hide known unwanted sections by heading text
+                        var badTexts = ['research', 'search for stocks', 'search or ask a question', 'build a watchlist', 'you may be interested in', 'discover more', 'compare markets'];
+                        var candidates = document.querySelectorAll('h2, h3');
+                        for (var i = 0; i < candidates.length; i++) {
+                            var txt = (candidates[i].textContent || '').trim().toLowerCase();
+                            for (var t = 0; t < badTexts.length; t++) {
+                                if (txt === badTexts[t]) {
+                                    var section = candidates[i].closest('section') || candidates[i].closest('[class]');
+                                    safeHide(section || candidates[i].parentElement);
+                                    break;
+                                }
+                            }
+                        }
+
+                        // Hide the Compare to button (classic site) by text content
+                        var allBtns = document.querySelectorAll('button, a');
+                        for (var i = 0; i < allBtns.length; i++) {
+                            var txt = (allBtns[i].textContent || '').trim().toLowerCase();
+                            if (txt.includes('compare to')) {
+                                var p = allBtns[i];
+                                for (var k = 0; k < 4 && p.parentElement && p.parentElement.tagName !== 'BODY'; k++) p = p.parentElement;
+                                safeHide(p);
+                            }
+                        }
+
+                        // Hide search inputs
+                        var inputs = document.querySelectorAll('input[placeholder], textarea[placeholder]');
+                        for (var i = 0; i < inputs.length; i++) {
+                            var ph = (inputs[i].placeholder || '').toLowerCase();
+                            if (ph.includes('search') || ph.includes('ask')) {
+                                var p = inputs[i];
+                                for (var k = 0; k < 6 && p.parentElement && p.parentElement.tagName !== 'BODY'; k++) p = p.parentElement;
+                                safeHide(p);
+                            }
+                        }
+
+                        // Hide all elements before h1 in its parent (breadcrumb, spacer, action buttons)
+                        if (h1) {
+                            var sib = h1.previousElementSibling;
+                            while (sib) {
+                                sib.style.setProperty('display', 'none', 'important');
+                                sib = sib.previousElementSibling;
+                            }
+                        }
+                        // Also target Beta breadcrumb link class
+                        var breadcrumb = document.querySelector('a.DJj6Nc');
+                        if (breadcrumb && breadcrumb.parentElement) {
+                            breadcrumb.parentElement.style.setProperty('display', 'none', 'important');
+                        }
+
+                        // Directly lock scroll position — the whitespace above the stock
+                        // content is ~65px (the Finance header bar height). Setting scrollTop
+                        // on both documentElement and body covers all scroll container cases.
+                        document.documentElement.scrollTop = 65;
+                        document.body.scrollTop = 65;
                     }
                     isolateChart();
-                    setTimeout(isolateChart, 200);
-                    setTimeout(isolateChart, 500);
+                    setInterval(isolateChart, 300);
                 ";
                 await Browser.CoreWebView2.ExecuteScriptAsync(script);
 
@@ -168,6 +225,18 @@ namespace FinanceWidget
         }
 
 
+
+        private void LoginToGoogle_Click(object sender, RoutedEventArgs e)
+        {
+            // Navigate to Google login; the continue= param redirects back to Finance after login
+            string returnUrl = Uri.EscapeDataString($"https://www.google.com/finance/quote/{CurrentTicker}");
+            Browser.CoreWebView2?.Navigate($"https://accounts.google.com/ServiceLogin?continue={returnUrl}");
+        }
+
+        private void ReturnToFinance_Click(object sender, RoutedEventArgs e)
+        {
+            LoadTicker(CurrentTicker);
+        }
 
         private void CloseWidget_Click(object sender, RoutedEventArgs e)
         {
