@@ -1,4 +1,9 @@
-# Finance Widget (v0.4)
+# Finance Widget (v0.5)
+
+## Download
+You can download the latest single-file executable from the **[GitHub Releases](https://github.com/Genghis1227/FinanceWidget/releases)** page.
+
+---
 
 <img src="icon.png" alt="Finance Widget Icon" width="80"/>
 
@@ -19,6 +24,15 @@ A lightweight, modern desktop application for Windows that displays clean, borde
 To run the pre-built single-file executable, you only need:
 - Windows 10 or 11
 - [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) (Pre-installed on Windows 11 and most Windows 10 systems)
+
+### Windows SmartScreen Warning
+Because this application is a community project and is not signed with a commercial developer certificate, Windows may display a **"Windows protected your PC"** warning when you first run it.
+
+To run the app:
+1. Click **"More info"**.
+2. Click **"Run anyway"**.
+
+---
 
 ## Building & Deploying
 This project is built using WPF and .NET 10. To package the application into a single, self-contained executable, run the following command in the project directory:
