@@ -54,6 +54,12 @@ namespace FinanceWidget
             {
                 BrowserContainer.Opacity = 0; 
                 string baseUrl = UseBetaSite ? "https://www.google.com/finance/beta/quote" : "https://www.google.com/finance/quote";
+                
+                // Set widget background to match site version
+                WidgetBorder.Background = UseBetaSite 
+                    ? new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#131314"))
+                    : System.Windows.Media.Brushes.White;
+
                 Browser.CoreWebView2.Navigate($"{baseUrl}/{ticker}");
                 TickerLabel.Text = ticker.Split(':')[0];
             }
@@ -76,106 +82,7 @@ namespace FinanceWidget
 
                 // Back on Finance — hide the Return to Finance menu item
                 ReturnToFinanceMenuItem.Visibility = Visibility.Collapsed;
-                string script = @"
-                    var style = document.createElement('style');
-                    style.textContent = `
-                        header, nav, #gb, footer, div.ZhXxed, div.Y8k45b.fXy5cc, div.fXy5cc, .bF2ive, .F1hUFe, .d73ztd, .qN1Zdf, .N35Hn, .tAEEs, .z4ebah, .PF7Y8c, .id-compare-input, .id-compare-button, .id-compare-input-div, .f7t46c, .I6776b { display: none !important; }
-                        body { background: white !important; margin: 0 !important; padding: 0 !important; }
-                        ::-webkit-scrollbar { display: none !important; }
-                    `;
-                    document.head.appendChild(style);
-
-                    function isolateChart() {
-                        var price = document.querySelector('.YMlS1d') || document.querySelector('div.V837kb') || document.querySelector('.YMlKec.fxKbKc');
-                        var chart = document.querySelector('canvas');
-
-                        // Find the STOCK TITLE h1 — skip the Finance logo h1
-                        var allH1s = document.querySelectorAll('h1');
-                        var h1 = null;
-                        for (var qi = 0; qi < allH1s.length; qi++) {
-                            var t = (allH1s[qi].textContent || '').trim();
-                            if (t.length > 5 && t !== 'Finance') { h1 = allH1s[qi]; break; }
-                        }
-
-                        function safeHide(el) {
-                            if (!el || el.tagName === 'BODY' || el.tagName === 'HTML') return;
-                            if (price && el.contains(price)) return;
-                            if (chart && el.contains(chart)) return;
-                            if (h1 && el.contains(h1)) return;  // never hide the stock title
-                            el.style.setProperty('display', 'none', 'important');
-                        }
-
-                        // Kill position:fixed and position:sticky overlays (the Research panel)
-                        // Only runs when price is found so we know the quote page loaded correctly
-                        if (price) {
-                            var allEls = document.querySelectorAll('body > *, body > * > *');
-                            for (var i = 0; i < allEls.length; i++) {
-                                var cs = window.getComputedStyle(allEls[i]);
-                                if (cs.position === 'fixed' || cs.position === 'sticky') {
-                                    safeHide(allEls[i]);
-                                }
-                            }
-                        }
-
-                        // Hide known unwanted sections by heading text
-                        var badTexts = ['research', 'search for stocks', 'search or ask a question', 'build a watchlist', 'you may be interested in', 'discover more', 'compare markets'];
-                        var candidates = document.querySelectorAll('h2, h3');
-                        for (var i = 0; i < candidates.length; i++) {
-                            var txt = (candidates[i].textContent || '').trim().toLowerCase();
-                            for (var t = 0; t < badTexts.length; t++) {
-                                if (txt === badTexts[t]) {
-                                    var section = candidates[i].closest('section') || candidates[i].closest('[class]');
-                                    safeHide(section || candidates[i].parentElement);
-                                    break;
-                                }
-                            }
-                        }
-
-                        // Hide the Compare to button (classic site) by text content
-                        var allBtns = document.querySelectorAll('button, a');
-                        for (var i = 0; i < allBtns.length; i++) {
-                            var txt = (allBtns[i].textContent || '').trim().toLowerCase();
-                            if (txt.includes('compare to')) {
-                                var p = allBtns[i];
-                                for (var k = 0; k < 4 && p.parentElement && p.parentElement.tagName !== 'BODY'; k++) p = p.parentElement;
-                                safeHide(p);
-                            }
-                        }
-
-                        // Hide search inputs
-                        var inputs = document.querySelectorAll('input[placeholder], textarea[placeholder]');
-                        for (var i = 0; i < inputs.length; i++) {
-                            var ph = (inputs[i].placeholder || '').toLowerCase();
-                            if (ph.includes('search') || ph.includes('ask')) {
-                                var p = inputs[i];
-                                for (var k = 0; k < 6 && p.parentElement && p.parentElement.tagName !== 'BODY'; k++) p = p.parentElement;
-                                safeHide(p);
-                            }
-                        }
-
-                        // Hide all elements before h1 in its parent (breadcrumb, spacer, action buttons)
-                        if (h1) {
-                            var sib = h1.previousElementSibling;
-                            while (sib) {
-                                sib.style.setProperty('display', 'none', 'important');
-                                sib = sib.previousElementSibling;
-                            }
-                        }
-                        // Also target Beta breadcrumb link class
-                        var breadcrumb = document.querySelector('a.DJj6Nc');
-                        if (breadcrumb && breadcrumb.parentElement) {
-                            breadcrumb.parentElement.style.setProperty('display', 'none', 'important');
-                        }
-
-                        // Directly lock scroll position — the whitespace above the stock
-                        // content is ~65px (the Finance header bar height). Setting scrollTop
-                        // on both documentElement and body covers all scroll container cases.
-                        document.documentElement.scrollTop = 65;
-                        document.body.scrollTop = 65;
-                    }
-                    isolateChart();
-                    setInterval(isolateChart, 300);
-                ";
+                string script = UseBetaSite ? GetBetaCleanupScript() : GetClassicCleanupScript();
                 await Browser.CoreWebView2.ExecuteScriptAsync(script);
 
                 // Show after applying styles to prevent any flash
@@ -241,6 +148,210 @@ namespace FinanceWidget
         private void CloseWidget_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private string GetClassicCleanupScript()
+        {
+            return @"
+                var style = document.createElement('style');
+                style.textContent = `
+                    header, nav, #gb, footer, div.ZhXxed, .rNScrf, .bF2ive, .F1hUFe, .d73ztd, .qN1Zdf, .N35Hn, .tAEEs, .z4ebah, .PF7Y8c, .id-compare-input, .id-compare-button, .id-compare-input-div, .f7t46c, .I6776b { display: none !important; }
+                    h1 { font-size: 18px !important; margin: 2px 0 !important; padding: 0 !important; }
+                    body { background: white !important; margin: 0 !important; padding: 0 !important; }
+                    ::-webkit-scrollbar { display: none !important; }
+                `;
+                document.head.appendChild(style);
+
+                function isolateChart() {
+                    var price = document.querySelector('.YMlS1d') || document.querySelector('.YMlKec.fxKbKc');
+                    var chart = document.querySelector('canvas');
+                    var timeline = document.querySelector('[role=""tablist""]') || document.querySelector('.D249ge');
+                    var tools = document.querySelector('div[role=""toolbar""]') || document.querySelector('.Gxz3Gc-LgbsSe')?.parentElement;
+
+                    var allH1s = document.querySelectorAll('h1');
+                    var h1 = null;
+                    for (var qi = 0; qi < allH1s.length; qi++) {
+                        var t = (allH1s[qi].textContent || '').trim();
+                        if (t.length > 5 && t !== 'Finance') { h1 = allH1s[qi]; break; }
+                    }
+
+                    function safeHide(el) {
+                        if (!el || el.tagName === 'BODY' || el.tagName === 'HTML') return;
+                        if (price && el.contains(price)) return;
+                        if (chart && el.contains(chart)) return;
+                        if (h1 && el.contains(h1)) return;
+                        if (timeline && el.contains(timeline)) return;
+                        if (tools && el.contains(tools)) return;
+                        el.style.setProperty('display', 'none', 'important');
+                    }
+
+                    if (price) {
+                        var allEls = document.querySelectorAll('body > *, body > * > *');
+                        for (var i = 0; i < allEls.length; i++) {
+                            var cs = window.getComputedStyle(allEls[i]);
+                            if (cs.position === 'fixed' || cs.position === 'sticky') {
+                                safeHide(allEls[i]);
+                            }
+                        }
+                    }
+
+                    var badTexts = ['research', 'search for stocks', 'search or ask a question', 'build a watchlist', 'you may be interested in', 'discover more', 'compare markets'];
+                    var candidates = document.querySelectorAll('h2, h3');
+                    for (var i = 0; i < candidates.length; i++) {
+                        var txt = (candidates[i].textContent || '').trim().toLowerCase();
+                        for (var t = 0; t < badTexts.length; t++) {
+                            if (txt === badTexts[t]) {
+                                var section = candidates[i].closest('section') || candidates[i].closest('[class]');
+                                safeHide(section || candidates[i].parentElement);
+                                break;
+                            }
+                        }
+                    }
+
+                    var allBtns = document.querySelectorAll('button, a');
+                    for (var i = 0; i < allBtns.length; i++) {
+                        var txt = (allBtns[i].textContent || '').trim().toLowerCase();
+                        if (txt.includes('compare to')) {
+                            var p = allBtns[i];
+                            for (var k = 0; k < 4 && p.parentElement && p.parentElement.tagName !== 'BODY'; k++) p = p.parentElement;
+                            safeHide(p);
+                        }
+                    }
+
+                    var inputs = document.querySelectorAll('input[placeholder], textarea[placeholder]');
+                    for (var i = 0; i < inputs.length; i++) {
+                        var ph = (inputs[i].placeholder || '').toLowerCase();
+                        if (ph.includes('search') || ph.includes('ask')) {
+                            var p = inputs[i];
+                            for (var k = 0; k < 6 && p.parentElement && p.parentElement.tagName !== 'BODY'; k++) p = p.parentElement;
+                            safeHide(p);
+                        }
+                    }
+
+                    if (h1) {
+                        var sib = h1.previousElementSibling;
+                        while (sib) {
+                            sib.style.setProperty('display', 'none', 'important');
+                            sib = sib.previousElementSibling;
+                        }
+                    }
+
+                    document.documentElement.scrollTop = 65;
+                    document.body.scrollTop = 65;
+                }
+                isolateChart();
+                setInterval(isolateChart, 300);
+            ";
+        }
+
+        private string GetBetaCleanupScript()
+        {
+            return @"
+                var style = document.createElement('style');
+                style.textContent = `
+                    /* Hide the top banner and all its variations */
+                    header, nav, #gb, footer, [role=""banner""], [role=""navigation""], [role=""complementary""], 
+                    [data-wiz-component*=""Header""], [data-wiz-component*=""header""],
+                    div.pYTkkf-hSRGPd, .pYTkkf-hSRGPd, div.Njxgkf, div.gguZDb, div.ZhXxed, .XYsxHc, 
+                    button[aria-label*=""thread""], button[aria-label*=""Research""], button[aria-label*=""history""] { 
+                        display: none !important; 
+                        visibility: hidden !important;
+                        height: 0 !important;
+                        width: 0 !important;
+                        opacity: 0 !important;
+                        pointer-events: none !important;
+                        position: absolute !important;
+                        top: -9999px !important;
+                    }
+
+                    /* Reclaim the whitespace at the bottom of the page */
+                    body, #yDmH0d {
+                        background: transparent !important; 
+                        margin: 0 !important; 
+                        padding: 0 !important; 
+                        padding-bottom: 0 !important;
+                        margin-bottom: 0 !important;
+                        overflow: hidden !important; 
+                    }
+
+                    .Y8k45b, .lkrQle { background: transparent !important; }
+                    ::-webkit-scrollbar { display: none !important; }
+                `;
+                document.head.appendChild(style);
+
+                function isolateChart() {
+                    var price = document.querySelector('.YMlS1d') || document.querySelector('.YMlKec.fxKbKc') || document.querySelector('div.V837kb');
+                    var chart = document.querySelector('canvas');
+                    var timeline = document.querySelector('[role=""tablist""]') || document.querySelector('.D249ge');
+
+                    var allH1s = document.querySelectorAll('h1');
+                    var h1 = null;
+                    for (var qi = 0; qi < allH1s.length; qi++) {
+                        var t = (allH1s[qi].textContent || '').trim();
+                        if (t.length > 5 && t !== 'Finance') { h1 = allH1s[qi]; break; }
+                    }
+
+                    function safeHide(el) {
+                        if (!el || el.tagName === 'BODY' || el.tagName === 'HTML') return;
+                        if (price && el.contains(price)) return;
+                        if (chart && el.contains(chart)) return;
+                        if (h1 && el.contains(h1)) return;
+                        if (timeline && el.contains(timeline)) return;
+                        el.style.setProperty('display', 'none', 'important');
+                    }
+
+                    if (price) {
+                        var allEls = document.querySelectorAll('body > *, body > * > *');
+                        for (var i = 0; i < allEls.length; i++) {
+                            var cs = window.getComputedStyle(allEls[i]);
+                            if (cs.position === 'fixed' || cs.position === 'sticky') {
+                                safeHide(allEls[i]);
+                            }
+                        }
+                    }
+
+                    var breadcrumb = document.querySelector('a.DJj6Nc');
+                    if (breadcrumb && breadcrumb.parentElement) {
+                        breadcrumb.parentElement.style.setProperty('display', 'none', 'important');
+                    }
+
+                    var badTexts = ['research', 'search for stocks', 'search or ask a question', 'build a watchlist', 'you may be interested in', 'discover more', 'compare markets'];
+                    var candidates = document.querySelectorAll('h2, h3');
+                    for (var i = 0; i < candidates.length; i++) {
+                        var txt = (candidates[i].textContent || '').trim().toLowerCase();
+                        for (var t = 0; t < badTexts.length; t++) {
+                            if (txt === badTexts[t]) {
+                                var section = candidates[i].closest('section') || candidates[i].closest('[class]');
+                                safeHide(section || candidates[i].parentElement);
+                                break;
+                            }
+                        }
+                    }
+
+                    var inputs = document.querySelectorAll('input[placeholder], textarea[placeholder]');
+                    for (var i = 0; i < inputs.length; i++) {
+                        var ph = (inputs[i].placeholder || '').toLowerCase();
+                        if (ph.includes('search') || ph.includes('ask')) {
+                            var p = inputs[i];
+                            for (var k = 0; k < 6 && p.parentElement && p.parentElement.tagName !== 'BODY'; k++) p = p.parentElement;
+                            safeHide(p);
+                        }
+                    }
+
+                    if (h1) {
+                        var sib = h1.previousElementSibling;
+                        while (sib) {
+                            sib.style.setProperty('display', 'none', 'important');
+                            sib = sib.previousElementSibling;
+                        }
+                    }
+
+                    document.documentElement.scrollTop = 65;
+                    document.body.scrollTop = 65;
+                }
+                isolateChart();
+                setInterval(isolateChart, 300);
+            ";
         }
     }
 }

@@ -10,7 +10,7 @@
     
     <Grid>
         <!-- Main Browser -->
-        <Border x:Name="WidgetBorder" CornerRadius="10" Background="White" ClipToBounds="True">
+        <Border x:Name="WidgetBorder" CornerRadius="10" Background="Transparent" ClipToBounds="True">
             <Border.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Keep on Top" x:Name="KeepOnTopMenuItem" IsCheckable="True" IsChecked="True" Click="KeepOnTop_Click" />
