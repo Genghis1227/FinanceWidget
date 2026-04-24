@@ -1,4 +1,4 @@
-# Finance Widget (v0.3)
+# Finance Widget (v0.4)
 
 <img src="icon.png" alt="Finance Widget Icon" width="80"/>
 
@@ -8,9 +8,11 @@ A lightweight, modern desktop application for Windows that displays clean, borde
 - **Multi-Widget Support:** Spawn as many independent widgets as you want.
 - **System Tray Integration:** Runs quietly in the background without cluttering your taskbar.
 - **State Persistence:** Automatically remembers your chosen ticker symbols, window positions, and "Keep on Top" preferences across restarts.
-- **Clean UI:** Injects custom CSS and JavaScript to strip away headers, footers, breadcrumbs, and sidebars from Google Finance — leaving just the stock title, price, and chart.
-- **Google Login Support:** Right-click any widget and choose **"Login to Google"** to sign into your Google account directly in the widget. Login persists across restarts, enabling the classic Google Finance layout.
-- **Beta UI Support *(Experimental)*:** A toggle in Settings to switch to the Google Finance Beta interface. Active development — rendering improvements ongoing.
+- **Clean UI:** Injects custom CSS and JavaScript to strip away headers, footers, breadcrumbs, and sidebars from Google Finance — leaving just the essential data.
+- **Smart Mode Detection:** Automatically detects whether the site is in Classic or Beta mode and applies version-specific cleanup logic.
+- **Dynamic Backgrounds:** Widget backgrounds automatically sync with the site theme — using Google's signature Dark Mode (#131314) for Beta and clean White for Classic.
+- **Google Login Support:** Right-click any widget and choose **"Login to Google"** to sign into your Google account directly in the widget. Login persists across restarts.
+- **Beta UI Support:** Experimental support for the Google Finance Beta interface with advanced cleanup to hide intrusive banners and research drawers.
 - **Keep on Top:** Pin individual widgets to always stay above other windows.
 
 ## Requirements
