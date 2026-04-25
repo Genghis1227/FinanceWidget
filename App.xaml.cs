@@ -29,6 +29,8 @@ namespace FinanceWidget
                 ToolTipText = "Finance Widget Manager"
             };
 
+            _taskbarIcon.TrayMouseDoubleClick += (s, args) => BringWidgetsToFront();
+
             // Build Tray Context Menu
             var contextMenu = new ContextMenu();
             
@@ -116,6 +118,22 @@ namespace FinanceWidget
         {
             var widget = new MainWindow();
             widget.Show();
+        }
+
+        private void BringWidgetsToFront()
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window is MainWindow)
+                {
+                    if (window.WindowState == WindowState.Minimized)
+                    {
+                        window.WindowState = WindowState.Normal;
+                    }
+                    window.Activate();
+                    window.Focus();
+                }
+            }
         }
 
         protected override void OnExit(ExitEventArgs e)
