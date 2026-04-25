@@ -41,6 +41,32 @@
                 
                 <Grid Grid.Row="1" x:Name="BrowserContainer">
                     <wv2:WebView2 x:Name="Browser" DefaultBackgroundColor="Transparent"/>
+                    
+                    <!-- Login Suggestion Banner -->
+                    <Border x:Name="LoginSuggestionBorder" VerticalAlignment="Bottom" Margin="10" Background="#ffffff" BorderBrush="#dadce0" BorderThickness="1" CornerRadius="8" Visibility="Collapsed" Panel.ZIndex="100">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.1" />
+                        </Border.Effect>
+                        <Grid Margin="12,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Sign in to Google" FontWeight="Bold" FontSize="12" Foreground="#202124"/>
+                                <TextBlock Text="Track your watchlist and get better results." FontSize="11" Foreground="#5f6368"/>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Sign In" Margin="10,0" Padding="12,4" Background="#1a73e8" Foreground="White" BorderThickness="0" Cursor="Hand" Click="LoginToGoogle_Click">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="4"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                            <Button Grid.Column="2" Content="✕" Background="Transparent" Foreground="#5f6368" BorderThickness="0" FontSize="14" Cursor="Hand" Click="DismissLoginSuggestion_Click" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
                 </Grid>
             </Grid>
         </Border>
