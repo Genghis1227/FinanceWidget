@@ -65,3 +65,7 @@ temp.png
 ehthumbs.db
 ehthumbs_vista.db
 [Tt]humbs.db
+
+# Build artifacts
+publish/
+
