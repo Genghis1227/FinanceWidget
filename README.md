@@ -1,4 +1,4 @@
-# Finance Widget (v0.5)
+# Finance Widget (v0.6)
 
 ## Download
 You can download the latest single-file executable from the **[GitHub Releases](https://github.com/Genghis1227/FinanceWidget/releases)** page.
@@ -15,9 +15,11 @@ A lightweight, modern desktop application for Windows that displays clean, borde
 - **State Persistence:** Automatically remembers your chosen ticker symbols, window positions, and "Keep on Top" preferences across restarts.
 - **Clean UI:** Injects custom CSS and JavaScript to strip away headers, footers, breadcrumbs, and sidebars from Google Finance — leaving just the essential data.
 - **Smart Mode Detection:** Automatically detects whether the site is in Classic or Beta mode and applies version-specific cleanup logic.
+- **Premium Icon Design:** Sleek, modern 3D neon trend icon with dark-mode optimized aesthetics.
+- **Advanced Beta UI Cleanup:** Refined logic to hide intrusive "Overview", "Financials", and AI Insights sections in the Google Finance Beta interface.
+- **Optimized Layout:** Added top padding to Beta UI for better title visibility and more robust layout stabilization.
 - **Dynamic Backgrounds:** Widget backgrounds automatically sync with the site theme — using Google's signature Dark Mode (#131314) for Beta and clean White for Classic.
 - **Google Login Support:** Right-click any widget and choose **"Login to Google"** to sign into your Google account directly in the widget. Login persists across restarts.
-- **Beta UI Support:** Experimental support for the Google Finance Beta interface with advanced cleanup to hide intrusive banners and research drawers.
 - **Keep on Top:** Pin individual widgets to always stay above other windows.
 
 ## Requirements

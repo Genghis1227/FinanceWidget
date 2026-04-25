@@ -88,6 +88,36 @@ namespace FinanceWidget
                 // Show after applying styles to prevent any flash
                 await Task.Delay(300);
                 BrowserContainer.Opacity = 1;
+
+                // Check if we should suggest login
+                CheckLoginStatus();
+            }
+        }
+
+        private async void CheckLoginStatus()
+        {
+            if (Browser.CoreWebView2 == null) return;
+
+            // Script to check for 'Sign in' button or 'Build a watchlist' text
+            string script = @"
+                (function() {
+                    // Check for common 'Sign in' button selectors or text
+                    const hasSignInButton = !!document.querySelector('a[href*=""accounts.google.com/ServiceLogin""]') || 
+                                           !!Array.from(document.querySelectorAll('span, div, a, button')).find(el => el.textContent.trim() === 'Sign in');
+                    
+                    const hasWatchlistText = document.body.innerText.toLowerCase().includes('build a watchlist');
+                    
+                    return hasSignInButton || hasWatchlistText;
+                })()";
+
+            string result = await Browser.CoreWebView2.ExecuteScriptAsync(script);
+            if (result != null && result.ToLower() == "true")
+            {
+                LoginSuggestionBorder.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                LoginSuggestionBorder.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -143,6 +173,11 @@ namespace FinanceWidget
         private void ReturnToFinance_Click(object sender, RoutedEventArgs e)
         {
             LoadTicker(CurrentTicker);
+        }
+
+        private void DismissLoginSuggestion_Click(object sender, RoutedEventArgs e)
+        {
+            LoginSuggestionBorder.Visibility = Visibility.Collapsed;
         }
 
         private void CloseWidget_Click(object sender, RoutedEventArgs e)
@@ -252,29 +287,37 @@ namespace FinanceWidget
                     /* Hide the top banner and all its variations */
                     header, nav, #gb, footer, [role=""banner""], [role=""navigation""], [role=""complementary""], 
                     [data-wiz-component*=""Header""], [data-wiz-component*=""header""],
-                    div.pYTkkf-hSRGPd, .pYTkkf-hSRGPd, div.Njxgkf, div.gguZDb, div.ZhXxed, .XYsxHc, 
-                    button[aria-label*=""thread""], button[aria-label*=""Research""], button[aria-label*=""history""] { 
+                    div.pYTkkf-hSRGPd, .pYTkkf-hSRGPd, div.Njxgkf, div.gguZDb, div.ZhXxed, .XYsxHc, .HwD9Ce,
+                    a[aria-label*=""Search""], button[aria-label*=""Settings""], .pYTkkf-Bz112c-LgbsSe,
+                    button[aria-label*=""thread""], button[aria-label*=""Research""], button[aria-label*=""history""],
+                    /* Hide the sticky header bar, JEPQ/Research tabs bar, and breadcrumb bar */
+                    div.OE5XRd, div.Gbn51b, div.PW49pd { 
                         display: none !important; 
                         visibility: hidden !important;
                         height: 0 !important;
-                        width: 0 !important;
-                        opacity: 0 !important;
-                        pointer-events: none !important;
-                        position: absolute !important;
-                        top: -9999px !important;
+                        max-height: 0 !important;
+                        overflow: hidden !important;
                     }
 
-                    /* Reclaim the whitespace at the bottom of the page */
-                    body, #yDmH0d {
+                    /* Remove the hardcoded 64px offsets and gaps */
+                    body, #yDmH0d, .Y8k45b, .lkrQle, .t4pbz, .XYsxHc, .DJj6Nc, .ZkAH1b, main, .V837kb { 
                         background: transparent !important; 
+                        padding-top: 0 !important; 
+                        margin-top: 0 !important; 
+                        top: 0 !important;
+                    }
+
+                    body, #yDmH0d {
                         margin: 0 !important; 
                         padding: 0 !important; 
-                        padding-bottom: 0 !important;
-                        margin-bottom: 0 !important;
                         overflow: hidden !important; 
                     }
 
-                    .Y8k45b, .lkrQle { background: transparent !important; }
+                    /* Give a small top padding so the title is visible */
+                    .Y8k45b, .lkrQle, main {
+                        padding-top: 8px !important;
+                    }
+
                     ::-webkit-scrollbar { display: none !important; }
                 `;
                 document.head.appendChild(style);
@@ -283,26 +326,54 @@ namespace FinanceWidget
                     var price = document.querySelector('.YMlS1d') || document.querySelector('.YMlKec.fxKbKc') || document.querySelector('div.V837kb');
                     var chart = document.querySelector('canvas');
                     var timeline = document.querySelector('[role=""tablist""]') || document.querySelector('.D249ge');
+                    var breadcrumb = document.querySelector('a.DJj6Nc') || document.querySelector('.DJj6Nc');
 
+                    // Robust Title Detection
+                    var title = null;
                     var allH1s = document.querySelectorAll('h1');
-                    var h1 = null;
                     for (var qi = 0; qi < allH1s.length; qi++) {
                         var t = (allH1s[qi].textContent || '').trim();
-                        if (t.length > 5 && t !== 'Finance') { h1 = allH1s[qi]; break; }
+                        if (t.length > 5 && t !== 'Finance') { title = allH1s[qi]; break; }
+                    }
+
+                    if (!title && price) {
+                        // Look for a large sibling of the price container
+                        var parent = price.closest('.Y8k45b') || price.parentElement;
+                        if (parent) {
+                            var candidates = parent.querySelectorAll('div, span');
+                            for (var i = 0; i < candidates.length; i++) {
+                                var txt = (candidates[i].textContent || '').trim();
+                                // Title is usually long and not the price itself
+                                if (txt.length > 10 && !candidates[i].contains(price) && !candidates[i].querySelector('canvas')) {
+                                    title = candidates[i];
+                                    break;
+                                }
+                            }
+                        }
                     }
 
                     function safeHide(el) {
                         if (!el || el.tagName === 'BODY' || el.tagName === 'HTML') return;
                         if (price && el.contains(price)) return;
                         if (chart && el.contains(chart)) return;
-                        if (h1 && el.contains(h1)) return;
+                        if (title && el.contains(title)) return;
                         if (timeline && el.contains(timeline)) return;
+                        if (breadcrumb && el.contains(breadcrumb)) return;
+                        
+                        // Don't hide the main container siblings if they might contain the title
+                        if (el.classList.contains('Y8k45b') || el.classList.contains('lkrQle')) return;
+
                         el.style.setProperty('display', 'none', 'important');
                     }
 
                     if (price) {
                         var allEls = document.querySelectorAll('body > *, body > * > *');
                         for (var i = 0; i < allEls.length; i++) {
+                            // Specifically hide the top bar
+                            if (allEls[i].classList.contains('pYTkkf-hSRGPd')) {
+                                allEls[i].style.setProperty('display', 'none', 'important');
+                                continue;
+                            }
                             var cs = window.getComputedStyle(allEls[i]);
                             if (cs.position === 'fixed' || cs.position === 'sticky') {
                                 safeHide(allEls[i]);
@@ -310,12 +381,7 @@ namespace FinanceWidget
                         }
                     }
 
-                    var breadcrumb = document.querySelector('a.DJj6Nc');
-                    if (breadcrumb && breadcrumb.parentElement) {
-                        breadcrumb.parentElement.style.setProperty('display', 'none', 'important');
-                    }
-
-                    var badTexts = ['research', 'search for stocks', 'search or ask a question', 'build a watchlist', 'you may be interested in', 'discover more', 'compare markets'];
+                    var badTexts = ['research', 'search for stocks', 'search or ask a question', 'build a watchlist', 'you may be interested in', 'discover more', 'compare markets', 'overview', 'financials', 'about'];
                     var candidates = document.querySelectorAll('h2, h3');
                     for (var i = 0; i < candidates.length; i++) {
                         var txt = (candidates[i].textContent || '').trim().toLowerCase();
@@ -323,6 +389,34 @@ namespace FinanceWidget
                             if (txt === badTexts[t]) {
                                 var section = candidates[i].closest('section') || candidates[i].closest('[class]');
                                 safeHide(section || candidates[i].parentElement);
+                                break;
+                            }
+                        }
+                    }
+
+                    // Hide everything below the timeline tabs (Overview, Financials, etc.)
+                    if (timeline) {
+                        var timelineContainer = timeline.closest('[class]') || timeline.parentElement;
+                        if (timelineContainer) {
+                            var nextSib = timelineContainer.nextElementSibling;
+                            while (nextSib) {
+                                safeHide(nextSib);
+                                nextSib = nextSib.nextElementSibling;
+                            }
+                        }
+                    }
+
+                    // Also hide tab-like elements below the chart (Overview, Financials, etc.)
+                    var allLinks = document.querySelectorAll('a, button, span');
+                    var tabTexts = ['overview', 'financials', 'about'];
+                    for (var i = 0; i < allLinks.length; i++) {
+                        var linkTxt = (allLinks[i].textContent || '').trim().toLowerCase();
+                        for (var t = 0; t < tabTexts.length; t++) {
+                            if (linkTxt === tabTexts[t]) {
+                                var tabContainer = allLinks[i].parentElement;
+                                if (tabContainer && tabContainer !== timeline) {
+                                    safeHide(tabContainer);
+                                }
                                 break;
                             }
                         }
@@ -338,16 +432,18 @@ namespace FinanceWidget
                         }
                     }
 
-                    if (h1) {
-                        var sib = h1.previousElementSibling;
+                    if (title) {
+                        var sib = title.previousElementSibling;
                         while (sib) {
+                            if (breadcrumb && sib.contains(breadcrumb)) break;
                             sib.style.setProperty('display', 'none', 'important');
                             sib = sib.previousElementSibling;
                         }
                     }
 
-                    document.documentElement.scrollTop = 65;
-                    document.body.scrollTop = 65;
+                    // Small negative scroll to push content down slightly for title visibility
+                    document.documentElement.scrollTop = 0;
+                    document.body.scrollTop = 0;
                 }
                 isolateChart();
                 setInterval(isolateChart, 300);
