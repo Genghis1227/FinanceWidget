@@ -5,10 +5,6 @@
 <h1 align="center">Finance Widget (v0.7.1)</h1>
 
 <p align="center">
-  <img src="assets/screenshot.png" alt="Finance Widget Screenshot" width="600"/>
-</p>
-
-<p align="center">
   A lightweight, modern desktop application for Windows that displays clean, borderless stock and ETF charts powered by Google Finance.
 </p>
 
@@ -52,6 +48,11 @@ dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=
 
 The resulting executable will be placed in:
 `bin\Release\net10.0-windows\win-x64\publish\FinanceWidget.exe`
+
+## Preview
+<p align="center">
+  <img src="assets/screenshot.png" alt="Finance Widget Screenshot" width="600"/>
+</p>
 
 ## Usage
 1. Launch `FinanceWidget.exe`.
