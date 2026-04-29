@@ -1,7 +1,7 @@
-# Finance Widget (v0.6)
+# Finance Widget (v0.7.1)
 
 ## Download
-You can download the latest single-file executable from the **[GitHub Releases](https://github.com/Genghis1227/FinanceWidget/releases)** page.
+You can download the latest version from the **[GitHub Releases](https://github.com/Genghis1227/FinanceWidget/releases)** page. The application is distributed as a ZIP archive; simply extract it and run `FinanceWidget.exe`.
 
 ---
 
@@ -12,6 +12,7 @@ A lightweight, modern desktop application for Windows that displays clean, borde
 ## Features
 - **Multi-Widget Support:** Spawn as many independent widgets as you want.
 - **System Tray Integration:** Runs quietly in the background without cluttering your taskbar.
+- **Tray Icon Double-Click:** Quickly bring all active widgets to the foreground by double-clicking the system tray icon.
 - **State Persistence:** Automatically remembers your chosen ticker symbols, window positions, and "Keep on Top" preferences across restarts.
 - **Clean UI:** Injects custom CSS and JavaScript to strip away headers, footers, breadcrumbs, and sidebars from Google Finance — leaving just the essential data.
 - **Smart Mode Detection:** Automatically detects whether the site is in Classic or Beta mode and applies version-specific cleanup logic.
@@ -23,7 +24,7 @@ A lightweight, modern desktop application for Windows that displays clean, borde
 - **Keep on Top:** Pin individual widgets to always stay above other windows.
 
 ## Requirements
-To run the pre-built single-file executable, you only need:
+To run the application, you only need:
 - Windows 10 or 11
 - [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) (Pre-installed on Windows 11 and most Windows 10 systems)
 
