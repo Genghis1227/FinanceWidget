@@ -1,13 +1,19 @@
-# Finance Widget (v0.7.1)
+<p align="center">
+  <img src="icon.png" alt="Finance Widget Icon" width="120"/>
+</p>
+
+<h1 align="center">Finance Widget (v0.7.1)</h1>
+
+<p align="center">
+  <img src="assets/screenshot.png" alt="Finance Widget Screenshot" width="600"/>
+</p>
+
+<p align="center">
+  A lightweight, modern desktop application for Windows that displays clean, borderless stock and ETF charts powered by Google Finance.
+</p>
 
 ## Download
 You can download the latest version from the **[GitHub Releases](https://github.com/Genghis1227/FinanceWidget/releases)** page. The application is distributed as a ZIP archive; simply extract it and run `FinanceWidget.exe`.
-
----
-
-<img src="icon.png" alt="Finance Widget Icon" width="80"/>
-
-A lightweight, modern desktop application for Windows that displays clean, borderless stock and ETF charts powered by Google Finance.
 
 ## Features
 - **Multi-Widget Support:** Spawn as many independent widgets as you want.
