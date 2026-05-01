@@ -22,7 +22,11 @@ namespace FinanceWidget
             Ticker = TickerTextBox.Text.Trim();
             if (string.IsNullOrEmpty(Ticker))
             {
-                Ticker = "JEPQ:NASDAQ";
+                // If empty, just don't change anything (or could show a message)
+                // For now, let's just close without error if they didn't mean to change it
+                DialogResult = false; 
+                Close();
+                return;
             }
             UseBetaSite = UseBetaCheckBox.IsChecked ?? false;
             DialogResult = true;

@@ -15,7 +15,7 @@ namespace FinanceWidget
         public string CurrentTicker { get; private set; }
         public bool UseBetaSite { get; private set; }
 
-        public MainWindow(string ticker = "JEPQ:NASDAQ", double left = double.NaN, double top = double.NaN, bool keepOnTop = true, bool useBetaSite = false)
+        public MainWindow(string ticker, double left = double.NaN, double top = double.NaN, bool keepOnTop = false, bool useBetaSite = false)
         {
             InitializeComponent();
             CurrentTicker = ticker;
@@ -134,6 +134,23 @@ namespace FinanceWidget
         private void KeepOnTop_Click(object sender, RoutedEventArgs e)
         {
             Topmost = KeepOnTopMenuItem.IsChecked;
+        }
+
+        private void AddNewWidget_Click(object sender, RoutedEventArgs e)
+        {
+            ((App)Application.Current).SpawnNewWidget();
+        }
+
+        private void ReleaseNotes_Click(object sender, RoutedEventArgs e)
+        {
+            var app = (App)Application.Current;
+            app.OpenUrl("https://github.com/Genghis1227/FinanceWidget/blob/main/ReleaseNotes/release_notes_v" + App.Version + ".md");
+        }
+
+        private async void CheckForUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            var app = (App)Application.Current;
+            await app.CheckForUpdatesAsync(true);
         }
 
         private void Settings_Click(object sender, RoutedEventArgs e)
@@ -271,8 +288,15 @@ namespace FinanceWidget
                         }
                     }
 
-                    document.documentElement.scrollTop = 65;
-                    document.body.scrollTop = 65;
+                    if (h1) {
+                        var rect = h1.getBoundingClientRect();
+                        var scrollTarget = window.pageYOffset + rect.top - 5;
+                        document.documentElement.scrollTop = scrollTarget;
+                        document.body.scrollTop = scrollTarget;
+                    } else {
+                        document.documentElement.scrollTop = 65;
+                        document.body.scrollTop = 65;
+                    }
                 }
                 isolateChart();
                 setInterval(isolateChart, 300);
