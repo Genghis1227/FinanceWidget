@@ -4,10 +4,10 @@ namespace FinanceWidget
 {
     public class WidgetConfig
     {
-        public string Ticker { get; set; } = "JEPQ:NASDAQ";
+        public string Ticker { get; set; } = string.Empty;
         public double Left { get; set; }
         public double Top { get; set; }
-        public bool KeepOnTop { get; set; } = true;
+        public bool KeepOnTop { get; set; } = false;
         public bool UseBetaSite { get; set; } = false;
     }
 

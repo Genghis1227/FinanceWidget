@@ -1,0 +1,105 @@
+<Window x:Class="FinanceWidget.AddTickerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Add New Widget" Height="250" Width="350"
+        WindowStartupLocation="CenterScreen"
+        Topmost="True"
+        Icon="pack://application:,,,/icon.png"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent">
+    <Window.Resources>
+        <Style x:Key="LinkButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#1a73e8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <TextBlock Text="{TemplateBinding Content}" TextDecorations="Underline"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="#174ea6"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Border CornerRadius="12" Background="White" BorderBrush="#dadce0" BorderThickness="1" MouseLeftButtonDown="Border_MouseLeftButtonDown">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.2" />
+        </Border.Effect>
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Enter Ticker Symbol" FontSize="18" FontWeight="SemiBold" Foreground="#202124" Margin="0,0,0,10"/>
+            
+            <StackPanel Grid.Row="1">
+                <Grid>
+                    <TextBox x:Name="TickerInput" Height="40" Padding="10,0" VerticalContentAlignment="Center" 
+                             FontSize="16" BorderBrush="#dadce0" BorderThickness="1" 
+                             KeyDown="TickerInput_KeyDown">
+                    </TextBox>
+                    <TextBlock IsHitTestVisible="False" Text="Enter ticker..." 
+                               VerticalAlignment="Center" HorizontalAlignment="Left" Margin="12,0,0,0" 
+                               Foreground="#9aa0a6" FontSize="14">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=TickerInput}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
+                <WrapPanel Margin="0,8,0,0">
+                    <TextBlock Text="Try: " Foreground="#5f6368" FontSize="12" VerticalAlignment="Center"/>
+                    <Button Content=".INX:INDEXSP" Style="{StaticResource LinkButtonStyle}" Click="Example_Click" Tag=".INX:INDEXSP"/>
+                    <TextBlock Text=", " Foreground="#5f6368" FontSize="12" VerticalAlignment="Center"/>
+                    <Button Content="AAPL:NASDAQ" Style="{StaticResource LinkButtonStyle}" Click="Example_Click" Tag="AAPL:NASDAQ"/>
+                    <TextBlock Text=", " Foreground="#5f6368" FontSize="12" VerticalAlignment="Center"/>
+                    <Button Content="JEPQ:NASDAQ" Style="{StaticResource LinkButtonStyle}" Click="Example_Click" Tag="JEPQ:NASDAQ"/>
+                    <TextBlock Text=", " Foreground="#5f6368" FontSize="12" VerticalAlignment="Center"/>
+                    <Button Content="ETH-USD" Style="{StaticResource LinkButtonStyle}" Click="Example_Click" Tag="ETH-USD"/>
+                </WrapPanel>
+
+                <Button Content="🔍 Browse Popular Stocks, Crypto, &amp; ETFs" Click="Browse_Click" 
+                        Margin="0,15,0,0" Background="#f8f9fa" Foreground="#1a73e8" 
+                        BorderBrush="#dadce0" BorderThickness="1" Height="30" Cursor="Hand">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="6"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+                <Button Content="Cancel" Click="Cancel_Click" Width="80" Height="32" 
+                        Background="Transparent" BorderThickness="0" Foreground="#5f6368" Cursor="Hand" Margin="0,0,10,0"/>
+                <Button x:Name="AddButton" Content="Add Widget" Click="Add_Click" Width="100" Height="32" 
+                        Background="#1a73e8" Foreground="White" BorderThickness="0" Cursor="Hand">
+                    <Button.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="4"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
