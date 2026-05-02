@@ -14,13 +14,14 @@ namespace FinanceWidget
 {
     public partial class App : Application
     {
-        public static string Version => "0.9.0";
+        public static string Version => "0.9.2";
         private TaskbarIcon? _taskbarIcon;
         private string _settingsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FinanceWidget", "appsettings.json");
         private const string GitHubRepoUrl = "https://github.com/Genghis1227/FinanceWidget";
         private const string GitHubApiUrl = "https://api.github.com/repos/Genghis1227/FinanceWidget/releases/latest";
 
         private bool _isShuttingDown = false;
+        public static bool HasShownLoginPrompt = false;
 
         protected override void OnStartup(StartupEventArgs e)
         {

@@ -23,7 +23,7 @@
             <Border.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Add New Widget" Click="AddNewWidget_Click" />
-                    <MenuItem Header="Settings" Click="Settings_Click" />
+                    <MenuItem Header="Use Google Beta Site" x:Name="UseBetaSiteMenuItem" IsCheckable="True" Click="UseBetaSite_Click" />
                     <MenuItem Header="Keep on Top" x:Name="KeepOnTopMenuItem" IsCheckable="True" IsChecked="False" Click="KeepOnTop_Click" />
                     <Separator />
                     <MenuItem Header="Release Notes" Click="ReleaseNotes_Click" />
@@ -42,7 +42,7 @@
                 </Grid.RowDefinitions>
                 
                 <!-- Drag Handle -->
-                <Border Grid.Row="0" Background="#f1f3f4" Cursor="SizeAll" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+                <Border Grid.Row="0" Background="#f1f3f4" Cursor="SizeAll" MouseLeftButtonDown="Window_MouseLeftButtonDown" WindowChrome.IsHitTestVisibleInChrome="True">
                     <Grid>
                         <TextBlock x:Name="TickerLabel" Text="" FontSize="11" FontWeight="Bold" Foreground="#5f6368" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -67,8 +67,8 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="Sign in to Google" FontWeight="Bold" FontSize="12" Foreground="#202124"/>
-                                <TextBlock Text="Track your watchlist and get better results." FontSize="11" Foreground="#5f6368"/>
+                                <TextBlock Text="Get a Better Experience" FontWeight="Bold" FontSize="12" Foreground="#202124"/>
+                                <TextBlock Text="Sign in to sync your watchlists and customized view." FontSize="11" Foreground="#5f6368"/>
                             </StackPanel>
                             <Button Grid.Column="1" Content="Sign In" Margin="10,0" Padding="12,4" Background="#1a73e8" Foreground="White" BorderThickness="0" Cursor="Hand" Click="LoginToGoogle_Click">
                                 <Button.Resources>

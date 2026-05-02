@@ -7,6 +7,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace FinanceWidget
 {
@@ -15,7 +17,7 @@ namespace FinanceWidget
         public string CurrentTicker { get; private set; }
         public bool UseBetaSite { get; private set; }
 
-        public MainWindow(string ticker, double left = double.NaN, double top = double.NaN, double width = 600, double height = 480, bool keepOnTop = false, bool useBetaSite = false)
+        public MainWindow(string ticker, double left = double.NaN, double top = double.NaN, double width = 600, double height = 480, bool keepOnTop = false, bool useBetaSite = true)
         {
             InitializeComponent();
             CurrentTicker = ticker;
@@ -33,6 +35,7 @@ namespace FinanceWidget
             
             this.Topmost = keepOnTop;
             KeepOnTopMenuItem.IsChecked = keepOnTop;
+            UseBetaSiteMenuItem.IsChecked = useBetaSite;
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -101,22 +104,36 @@ namespace FinanceWidget
         {
             if (Browser.CoreWebView2 == null) return;
 
-            // Script to check for 'Sign in' button or 'Build a watchlist' text
-            string script = @"
-                (function() {
-                    // Check for common 'Sign in' button selectors or text
-                    const hasSignInButton = !!document.querySelector('a[href*=""accounts.google.com/ServiceLogin""]') || 
-                                           !!Array.from(document.querySelectorAll('span, div, a, button')).find(el => el.textContent.trim() === 'Sign in');
-                    
-                    const hasWatchlistText = document.body.innerText.toLowerCase().includes('build a watchlist');
-                    
-                    return hasSignInButton || hasWatchlistText;
-                })()";
-
-            string result = await Browser.CoreWebView2.ExecuteScriptAsync(script);
-            if (result != null && result.ToLower() == "true")
+            bool isLoggedIn = false;
+            try
             {
+                // Most reliable way to check for Google login is checking for the SID or HSID cookies
+                var cookies = await Browser.CoreWebView2.CookieManager.GetCookiesAsync("https://www.google.com");
+                isLoggedIn = cookies.Any(c => c.Name == "SID" || c.Name == "HSID");
+            }
+            catch
+            {
+                // Fallback to DOM check if cookie manager fails
+                string script = @"(function() { return !!document.querySelector('a[href*=""accounts.google.com/ServiceLogin""]') || !!Array.from(document.querySelectorAll('span, div, a, button')).find(el => el.textContent.trim() === 'Sign in'); })()";
+                string result = await Browser.CoreWebView2.ExecuteScriptAsync(script);
+                isLoggedIn = !(result != null && result.ToLower() == "true");
+            }
+
+            if (!isLoggedIn)
+            {
+                // Show banner
                 LoginSuggestionBorder.Visibility = Visibility.Visible;
+
+                // Also show prominent dialog if this is the first check of the session
+                if (!App.HasShownLoginPrompt)
+                {
+                    App.HasShownLoginPrompt = true;
+                    var prompt = new LoginPromptWindow();
+                    if (prompt.ShowDialog() == true && prompt.WantsToLogin)
+                    {
+                        LoginToGoogle_Click(this, new RoutedEventArgs());
+                    }
+                }
             }
             else
             {
@@ -156,29 +173,10 @@ namespace FinanceWidget
             await app.CheckForUpdatesAsync(true);
         }
 
-        private void Settings_Click(object sender, RoutedEventArgs e)
+        private void UseBetaSite_Click(object sender, RoutedEventArgs e)
         {
-            var settings = new SettingsWindow(CurrentTicker, UseBetaSite);
-            if (settings.ShowDialog() == true)
-            {
-                bool settingsChanged = false;
-                if (UseBetaSite != settings.UseBetaSite)
-                {
-                    UseBetaSite = settings.UseBetaSite;
-                    settingsChanged = true;
-                }
-
-                if (CurrentTicker != settings.Ticker)
-                {
-                    CurrentTicker = settings.Ticker;
-                    settingsChanged = true;
-                }
-
-                if (settingsChanged)
-                {
-                    LoadTicker(CurrentTicker);
-                }
-            }
+            UseBetaSite = UseBetaSiteMenuItem.IsChecked;
+            LoadTicker(CurrentTicker);
         }
 
 
