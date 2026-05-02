@@ -69,3 +69,6 @@ ehthumbs_vista.db
 # Build artifacts
 publish/
 
+# Local helper scripts
+convert_icon.ps1
+
