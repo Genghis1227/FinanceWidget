@@ -15,11 +15,14 @@ namespace FinanceWidget
         public string CurrentTicker { get; private set; }
         public bool UseBetaSite { get; private set; }
 
-        public MainWindow(string ticker, double left = double.NaN, double top = double.NaN, bool keepOnTop = false, bool useBetaSite = false)
+        public MainWindow(string ticker, double left = double.NaN, double top = double.NaN, double width = 600, double height = 480, bool keepOnTop = false, bool useBetaSite = false)
         {
             InitializeComponent();
             CurrentTicker = ticker;
             UseBetaSite = useBetaSite;
+
+            if (width > 0) this.Width = width;
+            if (height > 0) this.Height = height;
 
             if (!double.IsNaN(left) && !double.IsNaN(top))
             {
@@ -200,6 +203,14 @@ namespace FinanceWidget
         private void CloseWidget_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void ResizeThumb_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
+            double newWidth = this.Width + e.HorizontalChange;
+            double newHeight = this.Height + e.VerticalChange;
+            if (newWidth > 150) this.Width = newWidth;
+            if (newHeight > 100) this.Height = newHeight;
         }
 
         private string GetClassicCleanupScript()

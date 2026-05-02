@@ -14,7 +14,7 @@ namespace FinanceWidget
 {
     public partial class App : Application
     {
-        public static string Version => "0.8.0";
+        public static string Version => "0.9.0";
         private TaskbarIcon? _taskbarIcon;
         private string _settingsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FinanceWidget", "appsettings.json");
         private const string GitHubRepoUrl = "https://github.com/Genghis1227/FinanceWidget";
@@ -83,7 +83,7 @@ namespace FinanceWidget
                     {
                         foreach (var config in state.Widgets)
                         {
-                            var widget = new MainWindow(config.Ticker, config.Left, config.Top, config.KeepOnTop, config.UseBetaSite);
+                            var widget = new MainWindow(config.Ticker, config.Left, config.Top, config.Width, config.Height, config.KeepOnTop, config.UseBetaSite);
                             widget.Show();
                         }
                         return;
@@ -111,6 +111,8 @@ namespace FinanceWidget
                         Ticker = mw.CurrentTicker,
                         Left = mw.Left,
                         Top = mw.Top,
+                        Width = mw.ActualWidth,
+                        Height = mw.ActualHeight,
                         KeepOnTop = mw.Topmost,
                         UseBetaSite = mw.UseBetaSite
                     });

@@ -9,6 +9,8 @@ namespace FinanceWidget
         public double Top { get; set; }
         public bool KeepOnTop { get; set; } = false;
         public bool UseBetaSite { get; set; } = false;
+        public double Width { get; set; } = 600;
+        public double Height { get; set; } = 480;
     }
 
     public class AppState
