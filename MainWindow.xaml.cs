@@ -54,6 +54,20 @@ namespace FinanceWidget
             LoadTicker(CurrentTicker);
         }
 
+        private void UpdateAppearanceForSiteVersion()
+        {
+            // Set widget background to match site version
+            WidgetBorder.Background = UseBetaSite 
+                ? new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#131314"))
+                : System.Windows.Media.Brushes.White;
+            
+            // Sync menu item
+            if (UseBetaSiteMenuItem.IsChecked != UseBetaSite)
+            {
+                UseBetaSiteMenuItem.IsChecked = UseBetaSite;
+            }
+        }
+
         private void LoadTicker(string ticker)
         {
             if (Browser.CoreWebView2 != null)
@@ -61,10 +75,7 @@ namespace FinanceWidget
                 BrowserContainer.Opacity = 0; 
                 string baseUrl = UseBetaSite ? "https://www.google.com/finance/beta/quote" : "https://www.google.com/finance/quote";
                 
-                // Set widget background to match site version
-                WidgetBorder.Background = UseBetaSite 
-                    ? new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#131314"))
-                    : System.Windows.Media.Brushes.White;
+                UpdateAppearanceForSiteVersion();
 
                 Browser.CoreWebView2.Navigate($"{baseUrl}/{ticker}");
                 TickerLabel.Text = ticker.Split(':')[0];
@@ -88,6 +99,15 @@ namespace FinanceWidget
 
                 // Back on Finance — hide the Return to Finance menu item
                 ReturnToFinanceMenuItem.Visibility = Visibility.Collapsed;
+
+                // Sync the beta site state with the actual URL we landed on
+                bool isActuallyBeta = currentUrl.Contains("/finance/beta/");
+                if (isActuallyBeta != UseBetaSite)
+                {
+                    UseBetaSite = isActuallyBeta;
+                    UpdateAppearanceForSiteVersion();
+                }
+
                 string script = UseBetaSite ? GetBetaCleanupScript() : GetClassicCleanupScript();
                 await Browser.CoreWebView2.ExecuteScriptAsync(script);
 
@@ -164,7 +184,7 @@ namespace FinanceWidget
         private void ReleaseNotes_Click(object sender, RoutedEventArgs e)
         {
             var app = (App)Application.Current;
-            app.OpenUrl("https://github.com/Genghis1227/FinanceWidget/blob/main/ReleaseNotes/release_notes_v" + App.Version + ".md");
+            app.OpenUrl("https://github.com/Genghis1227/FinanceWidget/blob/main/ReleaseNotes/latest_release_notes.md");
         }
 
         private async void CheckForUpdates_Click(object sender, RoutedEventArgs e)
@@ -176,6 +196,7 @@ namespace FinanceWidget
         private void UseBetaSite_Click(object sender, RoutedEventArgs e)
         {
             UseBetaSite = UseBetaSiteMenuItem.IsChecked;
+            UpdateAppearanceForSiteVersion();
             LoadTicker(CurrentTicker);
         }
 
@@ -184,7 +205,8 @@ namespace FinanceWidget
         private void LoginToGoogle_Click(object sender, RoutedEventArgs e)
         {
             // Navigate to Google login; the continue= param redirects back to Finance after login
-            string returnUrl = Uri.EscapeDataString($"https://www.google.com/finance/quote/{CurrentTicker}");
+            string baseUrl = UseBetaSite ? "https://www.google.com/finance/beta/quote" : "https://www.google.com/finance/quote";
+            string returnUrl = Uri.EscapeDataString($"{baseUrl}/{CurrentTicker}");
             Browser.CoreWebView2?.Navigate($"https://accounts.google.com/ServiceLogin?continue={returnUrl}");
         }
 

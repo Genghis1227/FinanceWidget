@@ -14,7 +14,7 @@ namespace FinanceWidget
 {
     public partial class App : Application
     {
-        public static string Version => "0.9.2";
+        public static string Version => "0.9.3";
         private TaskbarIcon? _taskbarIcon;
         private string _settingsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FinanceWidget", "appsettings.json");
         private const string GitHubRepoUrl = "https://github.com/Genghis1227/FinanceWidget";
@@ -46,7 +46,7 @@ namespace FinanceWidget
             addWidgetMenuItem.Click += (s, args) => SpawnNewWidget();
             
             var releaseNotesMenuItem = new MenuItem { Header = "Release Notes" };
-            releaseNotesMenuItem.Click += (s, args) => OpenUrl($"{GitHubRepoUrl}/blob/main/ReleaseNotes/release_notes_v{Version}.md");
+            releaseNotesMenuItem.Click += (s, args) => OpenUrl($"{GitHubRepoUrl}/blob/main/ReleaseNotes/latest_release_notes.md");
 
             var checkUpdatesMenuItem = new MenuItem { Header = "Check for Updates" };
             checkUpdatesMenuItem.Click += async (s, args) => await CheckForUpdatesAsync(true);
