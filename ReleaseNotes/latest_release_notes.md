@@ -1,0 +1,51 @@
+# Finance Widget v0.9.3 - Release Notes
+
+## What's New
+This release focuses on improving the Google Login experience and ensuring the application state always matches the site version being displayed.
+
+### 🛠️ Improvements
+- **Reliable Login Redirect**: Fixed an issue where logging into Google would always redirect you to the Classic site. The application now correctly remembers your preference and redirects you back to the **Beta site** if you were using it.
+- **Automatic UI Synchronization**: The "Use Google Beta Site" menu checkbox and the widget's background color now automatically update to match the actual version of the site being displayed. If Google redirects you (e.g., from Beta back to Classic), the application state will stay in sync.
+- **Enhanced Visual Consistency**: Consolidated styling logic to ensure that widget backgrounds and UI elements perfectly match the signature themes of both the Classic (White) and Beta (Dark Mode) interfaces.
+
+---
+
+# Finance Widget v0.9.2 - Release Notes
+
+## What's New
+This release simplifies the widget experience by streamlining settings and making the modern Google Beta interface the default view.
+
+### 🛠️ Improvements
+- **Simplified Settings**: Removed the separate "Settings" window. You can now toggle the **"Use Google Beta Site"** option directly from the widget's context menu.
+- **Beta by Default**: All new widgets now default to the modern Google Finance Beta interface for a cleaner, more feature-rich experience out of the box.
+- **Easy Ticker Updates**: To change a widget's ticker, simply spawn a new widget with the desired symbol. This reduces UI clutter and keeps the workflow focused.
+
+---
+
+# Finance Widget v0.9.1 - Release Notes
+
+## What's New
+This minor update addresses a usability issue with the widget's context menu on the title bar.
+
+### 🐛 Bug Fixes
+- **Context Menu Fix**: Right-clicking the top gray drag handle now correctly displays the custom Finance Widget menu (Settings, Add Widget, etc.) instead of the standard Windows system menu.
+- **Improved Hit Testing**: Refined how mouse clicks are handled in the window chrome to ensure application events are prioritized over system events in the title bar area.
+
+---
+
+# Finance Widget v0.9.0 - Release Notes
+
+## What's New
+This release introduces the highly requested **Resizable Widgets** feature, allowing you to tailor each widget's size to your desktop layout.
+
+### ✨ Features
+- **Dynamic Resizing**: You can now freely resize any widget by dragging its edges or the bottom-right corner.
+- **Responsive Layout**: The internal Google Finance charts and data will automatically scale and reposition themselves to fit the new widget dimensions.
+- **Size Persistence**: Your preferred widget dimensions are now saved and will be restored automatically when you restart the application.
+
+### 🛠️ Improvements
+- **Airspace Fix**: Implemented a subtle transparent margin around the browser container to ensure the embedded web view doesn't block window resizing events.
+- **Updated State Model**: Enhanced the app's internal state management to handle window width and height.
+
+### 🐛 Bug Fixes
+- Resolved an issue where the embedded web browser could intercept and block mouse interactions with the window's resize handles.
