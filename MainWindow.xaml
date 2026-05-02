@@ -6,11 +6,20 @@
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         ShowInTaskbar="False" Topmost="True"
         Icon="pack://application:,,,/icon.png"
-        Loaded="Window_Loaded">
+        Loaded="Window_Loaded"
+        ResizeMode="CanResizeWithGrip">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome 
+            CaptionHeight="20" 
+            ResizeBorderThickness="10" 
+            GlassFrameThickness="0" 
+            CornerRadius="10" />
+    </WindowChrome.WindowChrome>
     
-    <Grid>
+    <Grid Background="Transparent">
         <!-- Main Browser -->
-        <Border x:Name="WidgetBorder" CornerRadius="10" Background="Transparent" ClipToBounds="True">
+        <Border x:Name="WidgetBorder" CornerRadius="10" Background="Transparent" ClipToBounds="True" Margin="10">
             <Border.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Add New Widget" Click="AddNewWidget_Click" />
@@ -74,5 +83,6 @@
                 </Grid>
             </Grid>
         </Border>
+
     </Grid>
 </Window>

@@ -2,7 +2,7 @@
   <img src="icon.png" alt="Finance Widget Icon" width="120"/>
 </p>
 
-<h1 align="center">Finance Widget (v0.8.0)</h1>
+<h1 align="center">Finance Widget (v0.9.0)</h1>
 
 <p align="center">
   A lightweight, modern desktop application for Windows that displays clean, borderless stock and ETF charts powered by Google Finance.
@@ -12,7 +12,7 @@
 You can download the latest version from the **[GitHub Releases](https://github.com/Genghis1227/FinanceWidget/releases)** page. The application is distributed as a ZIP archive; simply extract it and run `FinanceWidget.exe`.
 
 ## What's New
-Check out the latest features and fixes in our **[Release Notes](ReleaseNotes/release_notes_v0.8.0.md)**. You can find the full history of changes in the **[ReleaseNotes](ReleaseNotes/)** directory.
+Check out the latest features and fixes in our **[Release Notes](ReleaseNotes/release_notes_v0.9.0.md)**. You can find the full history of changes in the **[ReleaseNotes](ReleaseNotes/)** directory.
 
 
 ## Features
@@ -29,6 +29,7 @@ Check out the latest features and fixes in our **[Release Notes](ReleaseNotes/re
 - **Google Login Support:** Right-click any widget and choose **"Login to Google"** to sign into your Google account directly in the widget. Login persists across restarts.
 - **Check for Updates**: Easily check for newer versions and download them directly from GitHub via the context menu.
 - **In-App Release Notes**: Quick access to version-specific release notes from any widget or the tray icon.
+- **Resizable Widgets:** Freely resize any widget by dragging its edges or the bottom-right corner. The internal graph and layout automatically adjust to fit the new size.
 - **Keep on Top:** Pin individual widgets to always stay above other windows.
 
 ## Requirements
@@ -70,7 +71,7 @@ The resulting executable will be placed in:
    - `AAPL:NASDAQ` (Apple)
    - `JEPQ:NASDAQ` (JPMorgan Nasdaq Equity Premium Income ETF)
    - `ETH-USD` (Ethereum to USD)
-6. **Move & Organize:** Drag any widget by its top gray drag-handle to reposition it on your screen.
+6. **Move & Organize:** Drag any widget by its top gray drag-handle to reposition it on your screen. Resize from the edges or bottom-right corner to change the widget's dimensions.
 7. **Keep on Top:** Right-click any widget and toggle **"Keep on Top"** to pin it above other windows.
 8. **Login to Google:** Right-click and select **"Login to Google"** to authenticate. After sign-in, Google redirects back to Finance automatically. Use **"Return to Finance"** if you need to navigate back manually.
 9. **Exit:** Right-click the system tray icon and select **"Exit All"** to close everything.
