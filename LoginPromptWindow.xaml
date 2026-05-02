@@ -1,0 +1,76 @@
+<Window x:Class="FinanceWidget.LoginPromptWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Google Sign In" Height="280" Width="400"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowStartupLocation="CenterScreen" ShowInTaskbar="True" Topmost="True">
+
+    <Border CornerRadius="12" Background="White" BorderBrush="#dadce0" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="20" ShadowDepth="5" Opacity="0.15" />
+        </Border.Effect>
+        <Grid Margin="25">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+                <Image Source="pack://application:,,,/icon.png" Width="32" Height="32" Margin="0,0,12,0"/>
+                <TextBlock Text="Get the Best Experience" FontSize="20" FontWeight="SemiBold" Foreground="#202124" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Content -->
+            <TextBlock Grid.Row="1" TextWrapping="Wrap" FontSize="14" Foreground="#5f6368" LineHeight="20">
+                Sign in to your Google account to get the best visual experience for the widget with your customized experience. This allows you to sync your watchlists, access personalized portfolios, and maintain your preferences across all your widgets.
+            </TextBlock>
+
+            <!-- Buttons -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                <Button Content="Later" Click="Later_Click" Width="80" Height="36" Background="Transparent" Foreground="#5f6368" BorderThickness="0" Cursor="Hand" Margin="0,0,10,0">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#f1f3f4"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                
+                <Button Content="Sign In" Click="SignIn_Click" Width="100" Height="36" Background="#1a73e8" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Medium">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#1765cc"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
