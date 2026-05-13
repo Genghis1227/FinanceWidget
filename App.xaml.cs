@@ -14,7 +14,7 @@ namespace FinanceWidget
 {
     public partial class App : Application
     {
-        public static string Version => "0.9.3";
+        public static string Version => Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0.0.0";
         private TaskbarIcon? _taskbarIcon;
         private string _settingsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FinanceWidget", "appsettings.json");
         private const string GitHubRepoUrl = "https://github.com/Genghis1227/FinanceWidget";
@@ -34,7 +34,7 @@ namespace FinanceWidget
             _taskbarIcon = new TaskbarIcon
             {
                 IconSource = new System.Windows.Media.Imaging.BitmapImage(new Uri("pack://application:,,,/icon.png")),
-                ToolTipText = "Finance Widget Manager"
+                ToolTipText = $"Finance Widget Manager (v{Version})"
             };
 
             _taskbarIcon.TrayMouseDoubleClick += (s, args) => BringWidgetsToFront();

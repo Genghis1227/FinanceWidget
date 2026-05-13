@@ -2,7 +2,7 @@
   <img src="icon.png" alt="Finance Widget Icon" width="120"/>
 </p>
 
-<h1 align="center">Finance Widget (v0.9.4)</h1>
+<h1 align="center">Finance Widget (v0.9.5)</h1>
 
 <p align="center">
   A lightweight, modern desktop application for Windows that displays clean, borderless stock and ETF charts powered by Google Finance.
@@ -50,7 +50,7 @@ To run the app:
 This project is built using WPF and .NET 10. To package the application into a single, self-contained executable, run the following command in the project directory:
 
 ```powershell
-dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+dotnet publish FinanceWidget.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishReadyToRun=true
 ```
 
 The resulting executable will be placed in:
