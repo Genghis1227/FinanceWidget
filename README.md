@@ -2,7 +2,7 @@
   <img src="icon.png" alt="Finance Widget Icon" width="120"/>
 </p>
 
-<h1 align="center">Finance Widget (v0.9.3)</h1>
+<h1 align="center">Finance Widget (v0.9.4)</h1>
 
 <p align="center">
   A lightweight, modern desktop application for Windows that displays clean, borderless stock and ETF charts powered by Google Finance.
@@ -23,7 +23,7 @@ Check out the latest features and fixes in our **[Release Notes](ReleaseNotes/la
 - **Clean UI:** Injects custom CSS and JavaScript to strip away headers, footers, breadcrumbs, and sidebars from Google Finance — leaving just the essential data.
 - **Popular Ticker Lookup**: Browse and add top Stocks, Crypto, and ETFs from a curated lookup screen.
 - **Elegant Ticker Entry**: Clean, modern prompt for adding widgets with one-tap clickable suggestions.
-- **Advanced Beta UI Cleanup:** Refined logic to hide intrusive "Overview", "Financials", and AI Insights sections in the Google Finance Beta interface.
+- **Advanced Beta UI Cleanup:** Refined logic to hide intrusive "Overview", "Financials", and AI Insights sections. Now includes auto-interaction simulation to dismiss persistent overlays on startup.
 - **Dynamic Scroll Correction**: Smart layout stabilization that prevents X-axis labels from being cut off during After Hours.
 - **Dynamic Backgrounds:** Widget backgrounds automatically sync with the site theme — using Google's signature Dark Mode (#131314) for Beta and clean White for Classic.
 - **Google Login Support:** Right-click any widget and choose **"Login to Google"** to sign into your Google account directly in the widget. Login persists across restarts.

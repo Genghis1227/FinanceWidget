@@ -346,12 +346,15 @@ namespace FinanceWidget
                     a[aria-label*=""Search""], button[aria-label*=""Settings""], .pYTkkf-Bz112c-LgbsSe,
                     button[aria-label*=""thread""], button[aria-label*=""Research""], button[aria-label*=""history""],
                     /* Hide the sticky header bar, JEPQ/Research tabs bar, and breadcrumb bar */
-                    div.OE5XRd, div.Gbn51b, div.PW49pd { 
+                    div.OE5XRd, div.Gbn51b, div.PW49pd,
+                    /* Additional bottom panels and AI research bars */
+                    .Gxz3Gc, .myl5Qd, .Q9vWud, .UTDcwe, .o55QVb { 
                         display: none !important; 
                         visibility: hidden !important;
                         height: 0 !important;
                         max-height: 0 !important;
                         overflow: hidden !important;
+                        pointer-events: none !important;
                     }
 
                     /* Remove the hardcoded 64px offsets and gaps */
@@ -376,6 +379,16 @@ namespace FinanceWidget
                     ::-webkit-scrollbar { display: none !important; }
                 `;
                 document.head.appendChild(style);
+
+                // One-time simulation of a click on the background to dismiss any persistent overlays or tooltips
+                setTimeout(function() {
+                    try {
+                        document.body.click();
+                        // Also try clicking the main container if body click doesn't bubble up
+                        var main = document.querySelector('main');
+                        if (main) main.click();
+                    } catch(e) {}
+                }, 500);
 
                 function isolateChart() {
                     var price = document.querySelector('.YMlS1d') || document.querySelector('.YMlKec.fxKbKc') || document.querySelector('div.V837kb');
@@ -425,7 +438,7 @@ namespace FinanceWidget
                         var allEls = document.querySelectorAll('body > *, body > * > *');
                         for (var i = 0; i < allEls.length; i++) {
                             // Specifically hide the top bar
-                            if (allEls[i].classList.contains('pYTkkf-hSRGPd')) {
+                            if (allEls[i].classList.contains('pYTkkf-hSRGPd') || allEls[i].classList.contains('ZhXxed')) {
                                 allEls[i].style.setProperty('display', 'none', 'important');
                                 continue;
                             }
@@ -504,5 +517,6 @@ namespace FinanceWidget
                 setInterval(isolateChart, 300);
             ";
         }
+
     }
 }
