@@ -31,24 +31,54 @@
                     <Separator />
                     <MenuItem Header="Login to Google" Click="LoginToGoogle_Click" />
                     <MenuItem Header="Return to Finance" x:Name="ReturnToFinanceMenuItem" Click="ReturnToFinance_Click" Visibility="Collapsed" />
+                    <MenuItem Header="Refresh" Click="Refresh_Click" />
                     <Separator />
                     <MenuItem Header="Close Widget" Click="CloseWidget_Click" />
                 </ContextMenu>
             </Border.ContextMenu>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="20" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 
                 <!-- Drag Handle -->
-                <Border Grid.Row="0" Background="#f1f3f4" Cursor="SizeAll" MouseLeftButtonDown="Window_MouseLeftButtonDown" WindowChrome.IsHitTestVisibleInChrome="True">
+                <Border x:Name="DragHandleBorder" Grid.Row="0" Height="20" Background="#f1f3f4" Cursor="SizeAll" MouseLeftButtonDown="Window_MouseLeftButtonDown" WindowChrome.IsHitTestVisibleInChrome="True">
                     <Grid>
                         <TextBlock x:Name="TickerLabel" Text="" FontSize="11" FontWeight="Bold" Foreground="#5f6368" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Rectangle Width="24" Height="2" Fill="#dadce0" Margin="0,1.5" RadiusX="1" RadiusY="1"/>
                             <Rectangle Width="24" Height="2" Fill="#dadce0" Margin="0,1.5" RadiusX="1" RadiusY="1"/>
                         </StackPanel>
+                        <Button x:Name="RefreshButton" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="20" Height="20" Background="Transparent" BorderThickness="0" Cursor="Hand" Click="RefreshButton_Click" ToolTip="Refresh widget content" WindowChrome.IsHitTestVisibleInChrome="True">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="BtnBorder" CornerRadius="10" Background="Transparent">
+                                                    <Path Data="M13.6,2.3 C12.2,0.9 10.2,0 8,0 C3.6,0 0,3.6 0,8 C0,12.4 3.6,16 8,16 C11.7,16 14.8,13.4 15.7,10 L13.6,10 C12.8,12.3 10.6,14 8,14 C4.7,14 2,11.3 2,8 C2,4.7 4.7,2 8,2 C9.7,2 11.1,2.7 12.2,3.8 L9,7 L16,7 L16,0 L13.6,2.3 Z" 
+                                                          Fill="#5f6368" 
+                                                          Stretch="Uniform" 
+                                                          Width="10" Height="10" 
+                                                          x:Name="PathIcon"
+                                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="BtnBorder" Property="Background" Value="#e8eaed" />
+                                                        <Setter TargetName="PathIcon" Property="Fill" Value="#202124" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter TargetName="BtnBorder" Property="Background" Value="#dadce0" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </Grid>
                 </Border>
                 

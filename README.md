@@ -2,7 +2,7 @@
   <img src="icon.png" alt="Finance Widget Icon" width="120"/>
 </p>
 
-<h1 align="center">Finance Widget (v0.9.5)</h1>
+<h1 align="center">Finance Widget (v1.0.0)</h1>
 
 <p align="center">
   A lightweight, modern desktop application for Windows that displays clean, borderless stock and ETF charts powered by Google Finance.
@@ -19,8 +19,11 @@ Check out the latest features and fixes in our **[Release Notes](ReleaseNotes/la
 - **Multi-Widget Support:** Spawn as many independent widgets as you want.
 - **System Tray Integration:** Runs quietly in the background without cluttering your taskbar.
 - **Tray Icon Double-Click:** Quickly bring all active widgets to the foreground by double-clicking the system tray icon.
-- **State Persistence:** Automatically remembers your chosen ticker symbols, window positions, and "Keep on Top" preferences across restarts.
+- **State Persistence:** Automatically remembers your chosen ticker symbols, window positions, "Keep on Top" preferences, and "Hide Title Bars" setting across restarts.
 - **Clean UI:** Injects custom CSS and JavaScript to strip away headers, footers, breadcrumbs, and sidebars from Google Finance — leaving just the essential data.
+- **Widget Refresh Controls:** Refresh individual widgets directly via a title bar button or context menu, or refresh all widgets simultaneously from the system tray context menu.
+- **Borderless Graph Toggle:** Hide window drag handles/borders globally from the system tray context menu for a completely clean, graph-only appearance. When hidden, the entire top section remains clickable and interactive.
+- **Aggressive Watchlist Stripping:** Automatically hides the Google Finance checkmark/plus watchlist buttons completely using recursive Shadow DOM traversal and coordinate bounds detection.
 - **Popular Ticker Lookup**: Browse and add top Stocks, Crypto, and ETFs from a curated lookup screen.
 - **Elegant Ticker Entry**: Clean, modern prompt for adding widgets with one-tap clickable suggestions.
 - **Advanced Beta UI Cleanup:** Refined logic to hide intrusive "Overview", "Financials", and AI Insights sections. Now includes auto-interaction simulation to dismiss persistent overlays on startup.
@@ -65,13 +68,21 @@ The resulting executable will be placed in:
 1. Launch `FinanceWidget.exe`.
 2. Find the icon in your System Tray (bottom right of your screen, near the clock).
 3. **Add Additional Widgets:** Right-click the tray icon and select **"Add New Widget"**. An elegant prompt will appear asking for the ticker symbol you want to track.
-4. **Change the Ticker:** Right-click any widget and click **"Settings"**.
-5. **Ticker Format:** Symbols use Google Finance format (`TICKER:EXCHANGE`). For example:
-   - `.INX:INDEXSP` (S&P 500 Index)
-   - `AAPL:NASDAQ` (Apple)
-   - `JEPQ:NASDAQ` (JPMorgan Nasdaq Equity Premium Income ETF)
-   - `ETH-USD` (Ethereum to USD)
-6. **Move & Organize:** Drag any widget by its top gray drag-handle to reposition it on your screen. Resize from the edges or bottom-right corner to change the widget's dimensions.
-7. **Keep on Top:** Right-click any widget and toggle **"Keep on Top"** to pin it above other windows.
-8. **Login to Google:** Right-click and select **"Login to Google"** to authenticate. After sign-in, Google redirects back to Finance automatically. Use **"Return to Finance"** if you need to navigate back manually.
-9. **Exit:** Right-click the system tray icon and select **"Exit All"** to close everything.
+
+### Finding Ticker Symbols via Browser URL
+To track a specific stock, index, ETF, or cryptocurrency, you must enter its symbol in the Google Finance format (`TICKER:EXCHANGE`). You can easily find the exact symbol using the browser address bar:
+1. Search for your desired asset on the [Google Finance Website](https://www.google.com/finance/).
+2. Check the browser address bar URL.
+3. The symbol is the final segment of the URL path. For example, if the URL is `https://www.google.com/finance/quote/NVDA:NASDAQ`, the correct ticker symbol to copy and enter is **`NVDA:NASDAQ`**.
+
+**Common Examples:**
+- `AAPL:NASDAQ` (Apple)
+- `JEPQ:NASDAQ` (JPMorgan Nasdaq Equity Premium Income ETF)
+- `.INX:INDEXSP` (S&P 500 Index)
+- `ETH-USD` (Ethereum to USD)
+
+### Managing Widgets
+1. **Move & Organize:** Drag any widget by its top gray drag-handle to reposition it on your screen. Resize from the edges or bottom-right corner to change the widget's dimensions.
+2. **Keep on Top:** Right-click any widget and toggle **"Keep on Top"** to pin it above other windows.
+3. **Login to Google:** Right-click and select **"Login to Google"** to authenticate. After sign-in, Google redirects back to Finance automatically. Use **"Return to Finance"** if you need to navigate back manually.
+4. **Exit:** Right-click the system tray icon and select **"Exit All"** to close everything.

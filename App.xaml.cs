@@ -22,6 +22,7 @@ namespace FinanceWidget
 
         private bool _isShuttingDown = false;
         public static bool HasShownLoginPrompt = false;
+        public bool HideTitleBars { get; set; } = false;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -29,6 +30,9 @@ namespace FinanceWidget
             
             // Keep app alive even if all widgets are closed
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+            // Load saved state first to populate settings before building tray icon
+            LoadState();
 
             // Initialize Tray Icon
             _taskbarIcon = new TaskbarIcon
@@ -45,6 +49,22 @@ namespace FinanceWidget
             var addWidgetMenuItem = new MenuItem { Header = "Add New Widget" };
             addWidgetMenuItem.Click += (s, args) => SpawnNewWidget();
             
+            var refreshAllMenuItem = new MenuItem { Header = "Refresh All" };
+            refreshAllMenuItem.Click += (s, args) => RefreshAllWidgets();
+
+            var hideTitleBarsMenuItem = new MenuItem 
+            { 
+                Header = "Hide Title Bars", 
+                IsCheckable = true, 
+                IsChecked = HideTitleBars 
+            };
+            hideTitleBarsMenuItem.Click += (s, args) => 
+            {
+                HideTitleBars = hideTitleBarsMenuItem.IsChecked;
+                ApplyTitleBarVisibility();
+                SaveState();
+            };
+            
             var releaseNotesMenuItem = new MenuItem { Header = "Release Notes" };
             releaseNotesMenuItem.Click += (s, args) => OpenUrl($"{GitHubRepoUrl}/blob/main/ReleaseNotes/latest_release_notes.md");
 
@@ -60,15 +80,14 @@ namespace FinanceWidget
             };
 
             contextMenu.Items.Add(addWidgetMenuItem);
+            contextMenu.Items.Add(refreshAllMenuItem);
+            contextMenu.Items.Add(hideTitleBarsMenuItem);
             contextMenu.Items.Add(releaseNotesMenuItem);
             contextMenu.Items.Add(checkUpdatesMenuItem);
             contextMenu.Items.Add(new Separator());
             contextMenu.Items.Add(exitMenuItem);
 
             _taskbarIcon.ContextMenu = contextMenu;
-
-            // Load saved state or spawn a default widget
-            LoadState();
         }
 
         private void LoadState()
@@ -80,14 +99,19 @@ namespace FinanceWidget
                     string json = File.ReadAllText(_settingsFilePath);
                     var state = JsonSerializer.Deserialize<AppState>(json);
 
-                    if (state != null && state.Widgets != null && state.Widgets.Count > 0)
+                    if (state != null)
                     {
-                        foreach (var config in state.Widgets)
+                        HideTitleBars = state.HideTitleBars;
+
+                        if (state.Widgets != null && state.Widgets.Count > 0)
                         {
-                            var widget = new MainWindow(config.Ticker, config.Left, config.Top, config.Width, config.Height, config.KeepOnTop, config.UseBetaSite);
-                            widget.Show();
+                            foreach (var config in state.Widgets)
+                            {
+                                var widget = new MainWindow(config.Ticker, config.Left, config.Top, config.Width, config.Height, config.KeepOnTop, config.UseBetaSite);
+                                widget.Show();
+                            }
+                            return;
                         }
-                        return;
                     }
                 }
                 catch
@@ -102,7 +126,10 @@ namespace FinanceWidget
 
         private void SaveState()
         {
-            var state = new AppState();
+            var state = new AppState
+            {
+                HideTitleBars = HideTitleBars
+            };
             foreach (Window window in Application.Current.Windows)
             {
                 if (window is MainWindow mw)
@@ -182,6 +209,28 @@ namespace FinanceWidget
                     }
                     window.Activate();
                     window.Focus();
+                }
+            }
+        }
+
+        private void RefreshAllWidgets()
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window is MainWindow mw)
+                {
+                    mw.RefreshWidget();
+                }
+            }
+        }
+
+        private void ApplyTitleBarVisibility()
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window is MainWindow mw)
+                {
+                    mw.SetTitleBarVisibility(!HideTitleBars);
                 }
             }
         }

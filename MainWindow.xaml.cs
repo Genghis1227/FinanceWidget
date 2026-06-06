@@ -9,6 +9,7 @@ using System.Windows.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
+using System.Windows.Media;
 
 namespace FinanceWidget
 {
@@ -40,6 +41,11 @@ namespace FinanceWidget
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            if (Application.Current is App app)
+            {
+                SetTitleBarVisibility(!app.HideTitleBars);
+            }
+
             BrowserContainer.Opacity = 0; // Hide container instead of WebView2 to prevent rendering bugs
             await Browser.EnsureCoreWebView2Async(null);
 
@@ -80,6 +86,35 @@ namespace FinanceWidget
                 Browser.CoreWebView2.Navigate($"{baseUrl}/{ticker}");
                 TickerLabel.Text = ticker.Split(':')[0];
             }
+        }
+
+        public void RefreshWidget()
+        {
+            if (Browser.CoreWebView2 != null)
+            {
+                BrowserContainer.Opacity = 0;
+                Browser.CoreWebView2.Reload();
+            }
+        }
+
+        public void SetTitleBarVisibility(bool visible)
+        {
+            DragHandleBorder.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            var chrome = System.Windows.Shell.WindowChrome.GetWindowChrome(this);
+            if (chrome != null)
+            {
+                chrome.CaptionHeight = visible ? 20 : 0;
+            }
+        }
+
+        private void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshWidget();
+        }
+
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshWidget();
         }
 
         private async void CoreWebView2_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
@@ -167,6 +202,16 @@ namespace FinanceWidget
         {
             if (e.ChangedButton == MouseButton.Left && e.ButtonState == MouseButtonState.Pressed)
             {
+                if (e.OriginalSource is DependencyObject dep)
+                {
+                    DependencyObject parent = dep;
+                    while (parent != null)
+                    {
+                        if (parent is Button)
+                            return;
+                        parent = VisualTreeHelper.GetParent(parent);
+                    }
+                }
                 this.DragMove();
             }
         }
@@ -239,6 +284,7 @@ namespace FinanceWidget
                 var style = document.createElement('style');
                 style.textContent = `
                     header, nav, #gb, footer, div.ZhXxed, .rNScrf, .bF2ive, .F1hUFe, .d73ztd, .qN1Zdf, .N35Hn, .tAEEs, .z4ebah, .PF7Y8c, .id-compare-input, .id-compare-button, .id-compare-input-div, .f7t46c, .I6776b { display: none !important; }
+                    button[aria-label*='list' i], button[aria-label*='follow' i], button[aria-label*='watchlist' i], button[class*='G2Lw2'], [class*='G2Lw2'] { display: none !important; }
                     h1 { font-size: 18px !important; margin: 2px 0 !important; padding: 0 !important; }
                     body { background: white !important; margin: 0 !important; padding: 0 !important; }
                     ::-webkit-scrollbar { display: none !important; }
@@ -324,10 +370,42 @@ namespace FinanceWidget
                         var scrollTarget = window.pageYOffset + rect.top - 5;
                         document.documentElement.scrollTop = scrollTarget;
                         document.body.scrollTop = scrollTarget;
+
+                        // Hide sibling buttons next to the title
+                        var p = h1;
+                        for (var depth = 0; depth < 4; depth++) {
+                            if (!p || p.tagName === 'BODY') break;
+                            var items = p.querySelectorAll('button, [role=""button""], a');
+                            for (var b = 0; b < items.length; b++) {
+                                var item = items[b];
+                                if (item === h1 || h1.contains(item)) continue;
+                                item.style.setProperty(""display"", ""none"", ""important"");
+                            }
+                            p = p.parentElement;
+                        }
                     } else {
                         document.documentElement.scrollTop = 65;
                         document.body.scrollTop = 65;
                     }
+
+                    function hideHeaderButtons(root) {
+                        if (!root) return;
+                        var buttons = root.querySelectorAll(""button, [role='button']"");
+                        for (var i = 0; i < buttons.length; i++) {
+                            var btn = buttons[i];
+                            var rect = btn.getBoundingClientRect();
+                            if (rect.top >= 0 && rect.top < 80) {
+                                btn.style.setProperty(""display"", ""none"", ""important"");
+                            }
+                        }
+                        var all = root.querySelectorAll(""*"");
+                        for (var i = 0; i < all.length; i++) {
+                            if (all[i].shadowRoot) {
+                                hideHeaderButtons(all[i].shadowRoot);
+                            }
+                        }
+                    }
+                    hideHeaderButtons(document);
                 }
                 isolateChart();
                 setInterval(isolateChart, 300);
@@ -375,6 +453,8 @@ namespace FinanceWidget
                     .Y8k45b, .lkrQle, main {
                         padding-top: 8px !important;
                     }
+
+                    button[aria-label*='list' i], button[aria-label*='follow' i], button[aria-label*='watchlist' i], button[class*='G2Lw2'], [class*='G2Lw2'] { display: none !important; }
 
                     ::-webkit-scrollbar { display: none !important; }
                 `;
@@ -512,6 +592,40 @@ namespace FinanceWidget
                     // Small negative scroll to push content down slightly for title visibility
                     document.documentElement.scrollTop = 0;
                     document.body.scrollTop = 0;
+
+                    if (title) {
+                        // Hide sibling buttons next to the title
+                        var p = title;
+                        for (var depth = 0; depth < 4; depth++) {
+                            if (!p || p.tagName === 'BODY') break;
+                            var items = p.querySelectorAll('button, [role=""button""], a');
+                            for (var b = 0; b < items.length; b++) {
+                                var item = items[b];
+                                if (item === title || title.contains(item)) continue;
+                                item.style.setProperty(""display"", ""none"", ""important"");
+                            }
+                            p = p.parentElement;
+                        }
+                    }
+
+                    function hideHeaderButtons(root) {
+                        if (!root) return;
+                        var buttons = root.querySelectorAll(""button, [role='button']"");
+                        for (var i = 0; i < buttons.length; i++) {
+                            var btn = buttons[i];
+                            var rect = btn.getBoundingClientRect();
+                            if (rect.top >= 0 && rect.top < 80) {
+                                btn.style.setProperty(""display"", ""none"", ""important"");
+                            }
+                        }
+                        var all = root.querySelectorAll(""*"");
+                        for (var i = 0; i < all.length; i++) {
+                            if (all[i].shadowRoot) {
+                                hideHeaderButtons(all[i].shadowRoot);
+                            }
+                        }
+                    }
+                    hideHeaderButtons(document);
                 }
                 isolateChart();
                 setInterval(isolateChart, 300);

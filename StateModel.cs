@@ -16,5 +16,6 @@ namespace FinanceWidget
     public class AppState
     {
         public List<WidgetConfig> Widgets { get; set; } = new List<WidgetConfig>();
+        public bool HideTitleBars { get; set; } = false;
     }
 }
