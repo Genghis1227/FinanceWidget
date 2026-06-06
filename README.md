@@ -61,7 +61,7 @@ The resulting executable will be placed in:
 
 ## Preview
 <p align="center">
-  <img src="assets/screenshot.png" alt="Finance Widget Screenshot" width="600"/>
+  <img src="assets/screenshot_v1_0.png" alt="Finance Widget Screenshot" width="600"/>
 </p>
 
 ## Usage
