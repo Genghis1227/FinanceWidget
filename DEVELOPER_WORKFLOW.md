@@ -2,15 +2,22 @@
 
 To ensure consistency, safety, and clear alignment, all contributors must strictly adhere to the following workflow sequence for all code changes. Failure to follow this sequence is a breach of project protocol.
 
-## 1. Scope Boundary
+## 1. Scope Boundary & Safety Guardrails
 * **Workspace Isolation:** Only read, create, modify, or delete files within the designated project root directory or specified subfolder scope. Do NOT access, edit, or reference files outside this scope unless explicitly instructed otherwise by the project owner.
+* **No Secrets or Local Machine Paths:** Never commit `.env*` files, API tokens, keys, certificates, database URIs, data dumps, or hardcoded local developer machine paths.
+
+> [!CAUTION]
+> **HARD BLOCK — Zero-Cost API & Dependency Safety:** Never introduce paid or metered APIs, cloud services, analytics/telemetry/ad SDKs, custom NuGet feeds, or unapproved NuGet packages outside the allowlisted dependencies (`Hardcodet.NotifyIcon.Wpf`, `Microsoft.Web.WebView2`) without explicit written approval from `@Genghis1227`.
+
+> [!CAUTION]
+> **HARD BLOCK — Branding, License & Attribution Protection:** Never remove, obscure, or alter `Trinhism` attribution (`https://trinhism.com/app/`), the MIT `LICENSE`, or canonical `https://github.com/Genghis1227/FinanceWidget` repository and update-check URLs.
 
 ---
 
 ## 2. Pre-Session Sync & Branching
 * **Git Tree Synchronization:** Before starting a session or creating a new branch, ensure the local working directory and `main` branch are completely clean and in sync with the remote repository:
   * `git checkout main`
-  * `git pull origin main`
+  * `git pull --prune origin main`
 * **No Direct Commits:** Never commit directly to the `main` or production branch.
 * **Session-Based Isolation:** Work in sessions. Unless explicitly instructed otherwise to isolate a single task, bundle related features and fixes for the current session into a single branch derived from the freshly synced `main` branch.
   * Command: `git checkout -b <prefix>-<session-or-issue-name>`
@@ -22,30 +29,36 @@ To ensure consistency, safety, and clear alignment, all contributors must strict
 ---
 
 ## 3. Implementation & Pushing
-* **Verify Changes:** Complete code changes across all bundled updates for the session and ensure all local unit tests and linting suites pass successfully.
-* **Documentation Review:** Before finalizing, verify if documentation (e.g., `README.md`, `FEATURES.md`, or API specs) needs an update to reflect your changes.
+* **Verify Changes:** Complete code changes across all bundled updates for the session and ensure all local guardrails, self-tests, and strict compiler checks pass cleanly before pushing:
+  * `node tests/validate-guardrails.js --self-test`
+  * `node tests/validate-guardrails.js`
+  * `dotnet build FinanceWidget.csproj -c Release -warnaserror`
+* **Documentation Review:** Before finalizing, verify if documentation (e.g., `README.md`, `ReleaseNotes/latest_release_notes.md`, or workflow guides) needs an update to reflect your changes.
 * **Push Remote:** Push the local branch to the remote repository.
 
 ---
 
 ## 4. Versioning (MANDATORY STOPPING POINT)
 > [!CAUTION]
-> **STRICT REQUIREMENT:** Never increment the version number or update the `CHANGELOG.md` autonomously. Confirmation from the project owner is a HARD BLOCK for this section.
+> **STRICT REQUIREMENT:** Never increment the version number or update release metadata (`ReleaseNotes/latest_release_notes.md`) autonomously. Confirmation from the project owner is a HARD BLOCK for this section.
 > 
-* **Version Detection:** Check if the application is versioned (e.g., `build.gradle.kts`, `version.txt`).
+* **Version Detection:** Check all synchronized version declarations in this repository:
+  * `FinanceWidget.csproj` (`<Version>X.Y.Z</Version>`)
+  * `README.md` (`Finance Widget (vX.Y.Z)`)
+  * `ReleaseNotes/latest_release_notes.md` (`# Finance Widget vX.Y.Z - Release Notes`)
 * **Mandatory Approval:** Before pushing your branch or applying any versioning changes, you **MUST** ask the project owner: *"Should the version number be incremented?"*
-* **Negative Case:** If the application is NOT versioned, skip this check and proceed to the PR.
+* **Negative Case:** If no version bump is approved, keep all version strings unchanged and proceed to the PR.
 
 ---
 
 ## 5. PR Creation & Mandatory Approval (MANDATORY STOPPING POINT)
 * **PR Creation:** Use GitHub CLI (`gh`) to create a Pull Request once changes are verified and versioning (if applicable) is approved.
 * **Issue Closure in PRs:** When creating the PR body, include GitHub keyword triggers (e.g., `Closes #123`, `Fixes #456`) so that the referenced issues are marked as **completed** upon submission/merge.
-* **Wait for Approval:** After creating the PR, **STOP** and wait for the project owner to provide an explicit **"Merge"** command in the chat.
+* **Wait for Approval:** After creating the PR, **STOP** and wait for the project owner to provide an explicit **"Merge"** command in the chat. Contributors must wait for `@Genghis1227` to review and merge.
 * **Shortcut Command:** If the project owner provides a combined command (e.g., *"PR and Merge"*), you may proceed with both PR creation and merging sequentially in one execution block.
 * **Tooling & Environment Requirements:**
   * GitHub CLI (`gh`) must be installed and used for PR and merge actions. 
-  * **Environment Variable Fix:** If authentication or execution issues occur with `gh` (such as conflicting tokens), ensure conflicting token environment variables (e.g., `GITHUB_TOKEN` or `GH_TOKEN`) are set to `null` or cleared in the session shell.
+  * **Environment Variable Fix:** If authentication or execution issues occur with `gh` (such as conflicting tokens), ensure conflicting token environment variables (e.g., `GITHUB_TOKEN` or `GH_TOKEN`) are cleared in the session shell.
 * **Execution Commands:**
   * `gh pr create --title "<Title>" --body "Summary of changes. Closes #<IssueNumber>"`
   * `gh pr merge --squash --delete-branch` *(Execute ONLY after explicit owner command)*
@@ -57,8 +70,9 @@ To ensure consistency, safety, and clear alignment, all contributors must strict
 * **Repository Hygiene:** Ensure both local and remote feature/session branches are fully cleaned up and deleted.
   * Commands:
     * `git checkout main`
-    * `git pull origin main`
+    * `git pull --prune origin main`
     * `git branch -d <branch-name>`
+* **Release Tagging:** Official GitHub Release `.zip` packages are built and published only when an owner-authorized `v*` tag matching `<Version>` is pushed on `main` (`git tag v<X.Y.Z> && git push origin v<X.Y.Z>`).
 * **Artifact Cleanup:** Permanently delete all session tracking artifacts (e.g., `implementation_plan.artifact.md`, `task.artifact.md`, `walkthrough.artifact.md`) from the tracking directory once the PR is merged to prevent context pollution in future sessions.
 * **Release Notes:** Provide a concise summary of all changes completed in the session, formatted for the target platform. Use **bullet points** to list functional changes or fixes. If deploying an application (e.g., Google Play Store), the notes must strictly adhere to the following safety and character constraints:
   * **Character Limit:** Strictly capped at a maximum of **512 characters** per language.

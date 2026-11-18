@@ -117,7 +117,7 @@ namespace FinanceWidget
             RefreshWidget();
         }
 
-        private async void CoreWebView2_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
+        private async void CoreWebView2_NavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
         {
             if (e.IsSuccess && Browser.CoreWebView2 != null)
             {
