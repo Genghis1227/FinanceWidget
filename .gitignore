@@ -72,3 +72,13 @@ publish/
 # Local helper scripts
 convert_icon.ps1
 
+# Secrets, environment files, and private keys
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+
+

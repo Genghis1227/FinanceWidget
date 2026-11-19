@@ -59,6 +59,15 @@ dotnet publish FinanceWidget.csproj -c Release -r win-x64 --self-contained true 
 The resulting executable will be placed in:
 `bin\Release\net10.0-windows\win-x64\publish\FinanceWidget.exe`
 
+### Contributing & Verification
+Contributors must follow [DEVELOPER_WORKFLOW.md](DEVELOPER_WORKFLOW.md) and install the **.NET 10 SDK** plus **Node.js 20+** (for running the zero-dependency repository guardrails). Before opening a pull request, verify everything passes locally:
+
+```powershell
+node tests/validate-guardrails.js --self-test
+node tests/validate-guardrails.js
+dotnet build FinanceWidget.csproj -c Release -warnaserror
+```
+
 ## Preview
 <p align="center">
   <img src="assets/screenshot_v1_0.png" alt="Finance Widget Screenshot" width="600"/>
@@ -86,3 +95,8 @@ To track a specific stock, index, ETF, or cryptocurrency, you must enter its sym
 2. **Keep on Top:** Right-click any widget and toggle **"Keep on Top"** to pin it above other windows.
 3. **Login to Google:** Right-click and select **"Login to Google"** to authenticate. After sign-in, Google redirects back to Finance automatically. Use **"Return to Finance"** if you need to navigate back manually.
 4. **Exit:** Right-click the system tray icon and select **"Exit All"** to close everything.
+
+## About & License
+Built by **Tony Trinh** — discover more apps at **[Trinhism Apps](https://trinhism.com/app/)** or explore releases on **[GitHub](https://github.com/Genghis1227/FinanceWidget)**.
+
+Released under the **[MIT License](LICENSE)**.
